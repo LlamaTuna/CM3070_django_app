@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Surveillance System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'camera/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Camera Surveillance System</h1>
+        <div class="video-container">
+            <img id="video" src="{% url 'video_feed' %}" alt="Video Stream">
+        </div>
+        <div class="buttons">
+            <button onclick="startRecording()">Start Recording</button>
+            <button onclick="stopRecording()">Stop Recording</button>
+            <button onclick="pauseRecording()">Pause Recording</button>
+        </div>
+        <textarea id="log" readonly></textarea>
+    </div>
+
+    <script>
+        function startRecording() {
+            // Add functionality for start recording
+        }
+
+        function stopRecording() {
+            // Add functionality for stop recording
+        }
+
+        function pauseRecording() {
+            // Add functionality for pause recording
+        }
+    </script>
+</body>
+</html>
