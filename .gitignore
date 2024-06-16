@@ -83,3 +83,21 @@ local_settings.py
 
 # Jupyter Notebook
 .ipynb_checkpoints
+# .gitignore
+
+# Virtual environment
+venv/
+web_app/lib/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+# Django specific
+*.log
+staticfiles/
+media/
+db.sqlite3
+
+
