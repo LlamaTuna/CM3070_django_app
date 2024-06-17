@@ -19,8 +19,10 @@ import time
 from datetime import datetime
 
 class VideoCamera:
-    def __init__(self):
+    def __init__(self, resolution=(640, 480)):
         self.video = cv2.VideoCapture(0)
+        self.video.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
+        self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
         self.previous_frame = None
         self.detector = MTCNN()
         self.base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
@@ -30,10 +32,12 @@ class VideoCamera:
         self.load_known_faces("known_faces")
         self.detection_log = {}
         self.detection_interval = 5  # seconds
+        self.alert_interval = 30  # 30 seconds
         self.alert_buffer = []
         self.frame_buffer = []
-        self.alert_interval = 300  # 5 minutes (300 seconds)
         self.last_alert_time = time.time()
+        self.frame_skip_interval = 2
+        self.frame_count = 0  # Frame counter to skip frames
 
     def __del__(self):
         self.video.release()
@@ -110,6 +114,13 @@ class VideoCamera:
         if not success:
             return None
 
+        self.frame_count += 1
+        if self.frame_count % self.frame_skip_interval != 0:
+            return None
+
+        # Optionally resize the frame to further optimize processing
+        image = cv2.resize(image, (640, 480))
+
         # Convert image to grayscale
         gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         
@@ -124,7 +135,7 @@ class VideoCamera:
             cv2.putText(image, "Movement Detected", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
             self.frame_buffer.append(image.copy())  # Store the frame
             self.log_event("Movement detected")  # Log movement event
-            self.save_event_clip()  # Save the event clip
+            self.save_event_clip()  # Save the event clip if buffer is not empty
             print("Movement detected")  # Debug statement
 
         # Detect faces
@@ -211,7 +222,7 @@ class VideoCamera:
             print("Email sent successfully")  # Debug statement
         except Exception as e:
             print(f"Failed to send snapshot email: {str(e)}")
-
+            
     def select_representative_frames(self, frames, num_frames):
         if len(frames) <= num_frames:
             return frames
@@ -235,7 +246,7 @@ class VideoCamera:
         print(f"Face image saved: {filepath}")  # Debug statement
         
         # Save the face record in the database
-        Face.objects.create(name=label, image=f"faces-seen/{filename}")
+        Face.objects.create(name=label, image=f"faces_seen/{filename}")
         print(f"Face record saved: {label}, {filename}")  # Debug statement
 
     def save_event_clip(self):
@@ -267,8 +278,9 @@ class VideoCamera:
 def gen(camera):
     while True:
         frame = camera.get_frame()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+        if frame:
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
 def video_feed(request):
     return StreamingHttpResponse(gen(VideoCamera()),
@@ -276,3 +288,4 @@ def video_feed(request):
 
 def index(request):
     return render(request, 'camera/index.html')
+
