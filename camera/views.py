@@ -1,3 +1,4 @@
+import threading
 from django.http import StreamingHttpResponse
 from django.shortcuts import render
 from django.conf import settings
@@ -19,7 +20,7 @@ import time
 from datetime import datetime
 
 class VideoCamera:
-    def __init__(self, resolution=(640, 480)):
+    def __init__(self, resolution=(320, 240)):
         self.video = cv2.VideoCapture(0)
         self.video.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
         self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
@@ -38,6 +39,12 @@ class VideoCamera:
         self.last_alert_time = time.time()
         self.frame_skip_interval = 2
         self.frame_count = 0  # Frame counter to skip frames
+        self.lock = threading.Lock()
+        self.frames = []  # Initialize frames list
+        self.detected_faces = []  # Initialize detected_faces list
+        self.face_detection_thread = threading.Thread(target=self._process_frames)
+        self.face_detection_thread.daemon = True
+        self.face_detection_thread.start()
 
     def __del__(self):
         self.video.release()
@@ -61,7 +68,10 @@ class VideoCamera:
         return features.flatten()
 
     def _detect_faces(self, img, confidence_threshold=0.95):
-        faces = self.detector.detect_faces(img)
+        small_img = cv2.resize(img, (160, 120))
+        faces = self.detector.detect_faces(small_img)
+        for face in faces:
+            face['box'] = [int(coordinate * 2) for coordinate in face['box']]
         filtered_faces = [face for face in faces if face['confidence'] >= confidence_threshold]
         return filtered_faces
 
@@ -119,17 +129,14 @@ class VideoCamera:
             return None
 
         # Optionally resize the frame to further optimize processing
-        image = cv2.resize(image, (640, 480))
-
-        # Convert image to grayscale
-        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        
-        # Convert grayscale image back to 3 channels to match the input shape of MTCNN
-        gray_image_3ch = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
+        image = cv2.resize(image, (320, 240))
 
         # Detect movement
-        movement_detected, movement_box = self.detect_movement(gray_image_3ch)
+        movement_detected, movement_box = self.detect_movement(image)
         if movement_detected:
+            with self.lock:
+                self.frames.append(image.copy())
+
             x, y, width, height = movement_box
             cv2.rectangle(image, (x, y), (x + width, y + height), (0, 0, 255), 2)
             cv2.putText(image, "Movement Detected", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
@@ -138,35 +145,49 @@ class VideoCamera:
             self.save_event_clip()  # Save the event clip if buffer is not empty
             print("Movement detected")  # Debug statement
 
-        # Detect faces
-        faces = self._detect_faces(gray_image_3ch)
-        for face in faces:
+        with self.lock:
+            detected_faces = self.detected_faces[:]
+
+        for face in detected_faces:
             x, y, width, height = face['box']
             cv2.rectangle(image, (x, y), (x + width, y + height), (0, 255, 0), 2)
-            face_img = image[y:y+height, x:x+width]
-            face_array = self._preprocess_image(face_img)
-            features = self._extract_features(face_array)
-
-            min_distance = float('inf')
-            label = None
-            for known_features, known_label in zip(self.known_faces_features, self.known_faces_labels):
-                distance = euclidean(features, known_features)
-                if distance < min_distance:
-                    min_distance = distance
-                    label = known_label
-
-            # Log faces detected with confidence > 95%
-            current_time = time.time()
-            if label and (label not in self.detection_log or current_time - self.detection_log[label] > self.detection_interval):
-                self.detection_log[label] = current_time  # Update the detection time log
-                self.log_event(f"{label} detected")
-                cv2.putText(image, label, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
-                print(f"Face detected: {label}")  # Debug statement
-                # Save face image to the faces-seen folder
-                self.save_face_image(face_img, label)
+            label = face.get('label', 'Unknown')
+            cv2.putText(image, label, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
         ret, jpeg = cv2.imencode('.jpg', image)
         return jpeg.tobytes()
+
+    def _process_frames(self):
+        while True:
+            if not self.frames:
+                time.sleep(0.01)
+                continue
+
+            with self.lock:
+                frame = self.frames.pop(0)
+
+            gray_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            gray_image_3ch = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
+            faces = self._detect_faces(gray_image_3ch)
+
+            for face in faces:
+                x, y, width, height = face['box']
+                face_img = frame[y:y+height, x:x+width]
+                face_array = self._preprocess_image(face_img)
+                features = self._extract_features(face_array)
+
+                min_distance = float('inf')
+                label = None
+                for known_features, known_label in zip(self.known_faces_features, self.known_faces_labels):
+                    distance = euclidean(features, known_features)
+                    if distance < min_distance:
+                        min_distance = distance
+                        label = known_label
+
+                face['label'] = label if label else 'Unknown'
+
+            with self.lock:
+                self.detected_faces = faces
 
     def log_event(self, event):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -222,7 +243,7 @@ class VideoCamera:
             print("Email sent successfully")  # Debug statement
         except Exception as e:
             print(f"Failed to send snapshot email: {str(e)}")
-            
+
     def select_representative_frames(self, frames, num_frames):
         if len(frames) <= num_frames:
             return frames
@@ -235,16 +256,16 @@ class VideoCamera:
         faces_seen_dir = os.path.join(settings.MEDIA_ROOT, 'faces_seen')
         if not os.path.exists(faces_seen_dir):
             os.makedirs(faces_seen_dir)
-        
+
         # Generate a unique filename
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         filename = f"{label}_{timestamp}.jpg"
         filepath = os.path.join(faces_seen_dir, filename)
-        
+
         # Save the face image
         cv2.imwrite(filepath, face_img)
         print(f"Face image saved: {filepath}")  # Debug statement
-        
+
         # Save the face record in the database
         Face.objects.create(name=label, image=f"faces_seen/{filename}")
         print(f"Face record saved: {label}, {filename}")  # Debug statement
@@ -259,21 +280,20 @@ class VideoCamera:
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             filename = f"event_{timestamp}.mp4"
             file_path = os.path.join(event_clips_dir, filename)
-            
+
             # Define the codec and create VideoWriter object
-            out = cv2.VideoWriter(file_path, cv2.VideoWriter_fourcc(*'mp4v'), 20.0, (640, 480))
-            
+            out = cv2.VideoWriter(file_path, cv2.VideoWriter_fourcc(*'mp4v'), 20.0, (320, 240))
+
             for frame in self.frame_buffer:
                 out.write(frame)
             out.release()
-            
+
             # Save the event record in the database
             event = Event(event_type='Movement', description='Movement detected', clip=f'event_clips/{filename}')
             event.save()
-            
+
             self.frame_buffer = []  # Clear buffer after saving
             print(f"Event clip saved: {file_path}")  # Debug statement
-
 
 def gen(camera):
     while True:
@@ -288,4 +308,3 @@ def video_feed(request):
 
 def index(request):
     return render(request, 'camera/index.html')
-
