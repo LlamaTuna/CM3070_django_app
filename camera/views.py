@@ -4,9 +4,9 @@ from django.conf import settings
 from .models import Face, Event
 import cv2
 import numpy as np
-from keras.preprocessing import image
-from keras.applications.resnet50 import preprocess_input, ResNet50
-from keras.models import Model
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.applications.resnet50 import preprocess_input, ResNet50
+from tensorflow.keras.models import Model
 from mtcnn.mtcnn import MTCNN
 from scipy.spatial.distance import euclidean
 import os
