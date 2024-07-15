@@ -1,0 +1,14 @@
+<!-- templates/camera/tag_face.html -->
+{% extends 'base.html' %}
+
+{% block title %}Tag Face{% endblock %}
+
+{% block content %}
+    <h1>Tag Face</h1>
+    <img src="{{ form.instance.image.url }}" alt="Face" width="200">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+{% endblock %}

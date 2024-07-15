@@ -3,10 +3,17 @@ body {
     background-color: #f5f5f5;
     margin: 0;
     padding: 0;
+}
+
+.index-body {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+}
+
+.gallery-body {
+    padding: 20px;
 }
 
 .container {
@@ -53,4 +60,46 @@ textarea {
     border: 1px solid #ddd;
     border-radius: 5px;
     resize: none;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.gallery-item:hover {
+    transform: scale(1.05);
+    border-color: #333;
+}
+
+.tag-button {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.tag-button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
 }

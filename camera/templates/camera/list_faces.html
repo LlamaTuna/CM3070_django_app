@@ -1,0 +1,16 @@
+<!-- templates/camera/list_faces.html -->
+{% extends 'base.html' %}
+
+{% block title %}Face Gallery{% endblock %}
+
+{% block content %}
+    <h1>Face Gallery</h1>
+    <div class="gallery">
+        {% for face in faces %}
+        <div class="gallery-item">
+            <img src="{{ face.image.url }}" alt="{{ face.name }}">
+            <a href="{% url 'tag_face' face.id %}" class="tag-button">Tag Face</a>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

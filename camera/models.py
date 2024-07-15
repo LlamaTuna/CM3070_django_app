@@ -12,3 +12,4 @@ class Face(models.Model):
     name = models.CharField(max_length=100)
     timestamp = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='faces_seen/')
+    tagged = models.BooleanField(default=False)
