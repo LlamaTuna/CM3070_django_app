@@ -29,3 +29,8 @@ class RegisterForm(forms.ModelForm):
         if cd['password'] != cd['password2']:
             raise forms.ValidationError('Passwords don\'t match.')
         return cd['password2']
+    
+class UploadFaceForm(forms.ModelForm):
+    class Meta:
+        model = Face
+        fields = ['name', 'image']

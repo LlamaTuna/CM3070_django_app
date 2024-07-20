@@ -1,6 +1,7 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+    background-color: #121212 !important; /* Dark background color */
+    color: #e0e0e0 !important; /* Light text color */
     margin: 0;
     padding: 0;
 }
@@ -10,17 +11,19 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    background-color: #121212 !important; /* Dark background color */
 }
 
 .gallery-body {
     padding: 20px;
+    background-color: #121212 !important; /* Dark background color */
 }
 
 .container {
-    background-color: #fff;
+    background-color: #1e1e1e !important; /* Dark container background */
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important; /* Darker shadow */
     max-width: 100%;
 }
 
@@ -28,7 +31,7 @@ body {
     width: 100%;
     max-width: 800px;
     height: auto;
-    border: 1px solid #ddd;
+    border: 1px solid #333 !important; /* Darker border */
     border-radius: 10px;
 }
 
@@ -41,15 +44,15 @@ body {
 button {
     padding: 10px 20px;
     font-size: 16px;
-    color: #fff;
-    background-color: #007bff;
+    color: #fff !important;
+    background-color: #007bff !important; /* Bright blue button */
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #0056b3 !important;
 }
 
 textarea {
@@ -57,8 +60,10 @@ textarea {
     height: 150px;
     margin-top: 20px;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #333 !important; /* Darker border */
     border-radius: 5px;
+    background-color: #1e1e1e !important; /* Darker background */
+    color: #e0e0e0 !important; /* Light text color */
     resize: none;
 }
 
@@ -66,12 +71,13 @@ textarea {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 10px;
+    background-color: #121212 !important; /* Dark background color */
 }
 
 .gallery-item {
     position: relative;
     overflow: hidden;
-    border: 2px solid #ddd;
+    border: 2px solid #333 !important; /* Darker border */
     border-radius: 8px;
     transition: transform 0.2s;
 }
@@ -84,7 +90,7 @@ textarea {
 
 .gallery-item:hover {
     transform: scale(1.05);
-    border-color: #333;
+    border-color: #777 !important; /* Lighter border on hover */
 }
 
 .tag-button {
@@ -92,8 +98,8 @@ textarea {
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.6);
-    color: white;
+    background-color: rgba(255, 255, 255, 0.1) !important; /* Lighter semi-transparent background */
+    color: white !important;
     padding: 5px 10px;
     border: none;
     border-radius: 4px;
@@ -101,5 +107,29 @@ textarea {
 }
 
 .tag-button:hover {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(255, 255, 255, 0.2) !important; /* Lighter hover effect */
+}
+/* Navbar styles */
+.navbar {
+    background-color: #1e1e1e !important; /* Dark background color for the navbar */
+    border-bottom: 1px solid #333 !important; /* Optional: border at the bottom */
+}
+
+.navbar a, .navbar-brand {
+    color: #e0e0e0 !important; /* Light text color for links */
+}
+
+.navbar a:hover, .navbar-brand:hover {
+    color: #ffffff !important; /* Brighter text color on hover */
+}
+
+.navbar a.active {
+    color: #007bff !important; /* Active link color */
+}
+
+/* Optional: Navbar container */
+.navbar-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
 }

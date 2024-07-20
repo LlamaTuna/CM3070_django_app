@@ -1,17 +1,69 @@
 <!-- templates/camera/index.html -->
 {% extends 'base.html' %}
 
-{% block title %}Camera Surveillance System{% endblock %}
+{% block title %}Camster{% endblock %}
 
 {% block content %}
-    <h1>Camera Surveillance System</h1>
+    <h1>Camster</h1>
     <div class="video-container">
         <img id="video" src="{% url 'video_feed' %}" alt="Video Stream">
     </div>
-    <div class="buttons">
+    <!-- <div class="buttons">
         <button onclick="startRecording()">Start Recording</button>
         <button onclick="stopRecording()">Stop Recording</button>
         <button onclick="pauseRecording()">Pause Recording</button>
     </div>
-    <textarea id="log" readonly></textarea>
+    <textarea id="log" readonly></textarea> -->
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        console.log('Document is ready');
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function fetchLogs() {
+            console.log('Fetching logs...');
+            fetch("{% url 'get_logs' %}", {
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => {
+                console.log('Received response from server');
+                return response.json();
+            })
+            .then(data => {
+                console.log('Processing data:', data);
+                const logArea = document.getElementById('log');
+                logArea.value = data.logs.join('\n');
+                logArea.scrollTop = logArea.scrollHeight;  // Scroll to the bottom
+            })
+            .catch(error => console.error('Error fetching logs:', error));
+        }
+
+        setInterval(fetchLogs, 2000);  // Fetch logs every 2 seconds
+    });
+
+    function printTestStatement() {
+        const testLogArea = document.getElementById('testLog');
+        testLogArea.value += "This is a test statement.\n";
+        testLogArea.scrollTop = testLogArea.scrollHeight;  // Scroll to the bottom
+    }
+</script>
 {% endblock %}

@@ -13,4 +13,6 @@ urlpatterns = [
     path('tag_face/<int:face_id>/', views.tag_face, name='tag_face'),
     path('video_feed/', views.video_feed, name='video_feed'),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('get_logs/', views.get_logs, name='get_logs'),
+    path('upload_face/', views.upload_face, name='upload_face'),
 ]
