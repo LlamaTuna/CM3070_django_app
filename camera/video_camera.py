@@ -45,7 +45,7 @@ camera_instance = None
 
 # Global variables for threshold values
 CONFIDENCE_THRESHOLD = 0.90  # Adjust this value for face detection confidence
-RECOGNITION_THRESHOLD = 4.6   # Adjust this value for face recognition labeling
+RECOGNITION_THRESHOLD = 5.6   # Adjust this value for face recognition labeling
 
 class VideoCamera:
     """
