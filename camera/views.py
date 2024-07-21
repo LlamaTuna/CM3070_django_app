@@ -42,6 +42,12 @@ logs = []
 camera_instance = None
 
 def log_event(event):
+    """
+    Logs an event with a timestamp.
+
+    Args:
+        event (str): Description of the event.
+    """
     global logs
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     log_entry = f"[{timestamp}] {event}"
@@ -50,6 +56,15 @@ def log_event(event):
     print("log event call", log_entry)  # Debug statement
 
 def get_logs(request):
+    """
+    Returns the last 100 log entries as a JSON response.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        JsonResponse: A JSON response containing the last 100 log entries.
+    """
     global logs
     with log_lock:
         log_data = logs[-100:]  # Get the last 100 log entries
@@ -58,23 +73,35 @@ def get_logs(request):
 
 
 # Initialize the camera processing
-def start_camera():
+def initialize_camera():
+    """
+    Initialize the camera instance.
+    """
     global camera_instance
     if camera_instance is None:
         camera_instance = VideoCamera()
+        if camera_instance.video is None:
+            camera_instance = None
+            print("Failed to initialize camera.")
+        else:
+            print("Camera initialized successfully.")
 
 # Initialize the camera processing
-def start_camera():
-    global camera_instance
-    if camera_instance is None:
-        camera_instance = VideoCamera()
-
 if not is_management_command:
-    camera_thread = threading.Thread(target=start_camera)
+    camera_thread = threading.Thread(target=initialize_camera)
     camera_thread.daemon = True
     camera_thread.start()
 
 def gen(camera):
+    """
+    Generator function to yield frames from the camera.
+
+    Args:
+        camera (VideoCamera): The camera instance.
+
+    Yields:
+        bytes: JPEG-encoded frame.
+    """
     while True:
         frame = camera.get_frame()
         if frame:
@@ -82,20 +109,57 @@ def gen(camera):
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
 def video_feed(request):
+    """
+    Returns a streaming HTTP response with frames from the camera.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        StreamingHttpResponse: The streaming HTTP response.
+    """
     return StreamingHttpResponse(gen(camera_instance),
                                  content_type='multipart/x-mixed-replace; boundary=frame')
 
 def index(request):
+    """
+    Renders the index page.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered index page.
+    """
     return render(request, 'camera/index.html')
 
 @login_required
 def list_faces(request):
+    """
+    Lists all untagged faces.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered list_faces page with untagged faces.
+    """
     reconcile_faces()  # Reconcile the database with the actual images
     faces = Face.objects.filter(tagged=False)
     return render(request, 'camera/list_faces.html', {'faces': faces})
 
 @login_required
 def tag_face(request, face_id):
+    """
+    Tags a face with the provided details.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+        face_id (int): The ID of the face to be tagged.
+
+    Returns:
+        HttpResponse: The rendered tag_face page with the form or a redirect to list_faces.
+    """
     face = Face.objects.get(id=face_id)
     if request.method == 'POST':
         form = TagFaceForm(request.POST, request.FILES, instance=face)
@@ -119,9 +183,27 @@ def tag_face(request, face_id):
 
 @staff_member_required
 def admin_view(request):
+    """
+    Renders the admin view page.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered admin view page.
+    """
     return render(request, 'camera/admin.html')
 
 def register(request):
+    """
+    Handles user registration.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered register page with the form or a redirect to index.
+    """
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -134,6 +216,15 @@ def register(request):
 
 @login_required
 def upload_face(request):
+    """
+    Handles the upload of a new face image.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered upload_face page with the form or a redirect to list_faces.
+    """
     if request.method == 'POST':
         form = UploadFaceForm(request.POST, request.FILES)
         if form.is_valid():

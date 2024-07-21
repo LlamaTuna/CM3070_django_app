@@ -1,4 +1,5 @@
 import threading
+import logging
 from concurrent.futures import ThreadPoolExecutor
 from django.http import StreamingHttpResponse, JsonResponse
 from django.shortcuts import render, redirect
@@ -25,6 +26,10 @@ import pyaudio
 import wave
 import subprocess
 
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 # Check if the script is running a management command
 import sys
 is_management_command = len(sys.argv) > 1 and sys.argv[1] in ['makemigrations', 'migrate', 'createsuperuser', 'collectstatic']
@@ -38,8 +43,74 @@ if not is_management_command:
 # Global variable to hold the camera instance
 camera_instance = None
 
+# Global variables for threshold values
+CONFIDENCE_THRESHOLD = 0.90  # Adjust this value for face detection confidence
+RECOGNITION_THRESHOLD = 4.6   # Adjust this value for face recognition labeling
+
 class VideoCamera:
+    """
+    A class to represent a video camera for face detection and recognition.
+
+    Attributes:
+    video: cv2.VideoCapture
+        Video capture object for accessing the webcam.
+    detector: MTCNN
+        Face detection model.
+    base_model: ResNet50
+        Base model for feature extraction.
+    model: Model
+        Custom model for feature extraction.
+    known_faces_features: list
+        List of known faces' features.
+    known_faces_labels: list
+        List of known faces' labels.
+    frame_skip_interval: int
+        Interval for skipping frames.
+    frame_count: int
+        Counter for frames processed.
+    face_recognition_interval: int
+        Interval for face recognition.
+    face_recognition_counter: int
+        Counter for face recognition.
+    lock: threading.Lock
+        Lock for thread-safe operations.
+    frames: list
+        List of frames to be processed.
+    detected_faces: list
+        List of detected faces.
+    executor: ThreadPoolExecutor
+        Executor for processing frames in a separate thread.
+    save_timer: threading.Timer
+        Timer for periodic saving of the running buffer.
+    previous_frame: np.ndarray
+        Previous frame for motion detection.
+    detection_log: dict
+        Log for detection events.
+    detection_interval: int
+        Interval for logging detections.
+    alert_interval: int
+        Interval for sending alerts.
+    alert_buffer: list
+        Buffer for alert messages.
+    frame_buffer: list
+        Buffer for frames of detected events.
+    running_buffer: list
+        Running buffer to store frames continuously.
+    audio_stream: pyaudio.Stream
+        Audio stream for recording.
+    audio_frames: list
+        List of recorded audio frames.
+    last_alert_time: float
+        Timestamp for the last alert sent.
+    """
+
     def __init__(self, resolution=(320, 240)):
+        """
+        Initializes the video camera, face detection model, and other attributes.
+
+        Parameters:
+        resolution (tuple): Resolution for the video capture.
+        """
         self.video = cv2.VideoCapture(0)
         if not self.video.isOpened():
             print("Error: Could not open video device.")
@@ -84,11 +155,36 @@ class VideoCamera:
         # Initialize audio stream
         self.audio_stream = self._initialize_audio()
 
+    def open_video_device(self):
+        """
+        Opens the video device by trying the first two indexes.
+        """
+        for index in range(2):  # Try first two indexes
+            self.video = cv2.VideoCapture(index)
+            if self.video.isOpened():
+                print(f"Video device at index {index} opened successfully.")
+                return
+            else:
+                print(f"Failed to initialize camera at index {index}: Error: Could not open video device at index {index}.")
+        self.video = None
+
     def _initialize_model(self):
+        """
+        Initializes the feature extraction model.
+        """
         self.base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
         self.model = self._build_feature_extractor(self.base_model)
 
     def _build_feature_extractor(self, base_model):
+        """
+        Builds a custom feature extraction model.
+
+        Parameters:
+        base_model (Model): Base model for feature extraction.
+
+        Returns:
+        Model: Custom feature extraction model.
+        """
         from tensorflow.keras.layers import GlobalAveragePooling2D, Dense
         x = base_model.output
         x = GlobalAveragePooling2D()(x)
@@ -97,6 +193,9 @@ class VideoCamera:
         return Model(inputs=base_model.input, outputs=predictions)
 
     def __del__(self):
+        """
+        Releases resources when the object is deleted.
+        """
         if self.video:
             self.video.release()
         self.save_timer.cancel()
@@ -106,6 +205,15 @@ class VideoCamera:
             self.audio_stream.close()
 
     def _preprocess_image(self, img):
+        """
+        Preprocesses the image for feature extraction.
+
+        Parameters:
+        img (np.ndarray): Image to preprocess.
+
+        Returns:
+        np.ndarray: Preprocessed image.
+        """
         from tensorflow.keras.applications.resnet50 import preprocess_input
         if img is None or img.size == 0:
             return None
@@ -116,12 +224,31 @@ class VideoCamera:
         return img_array
 
     def _extract_features(self, img_array):
+        """
+        Extracts features from the preprocessed image.
+
+        Parameters:
+        img_array (np.ndarray): Preprocessed image array.
+
+        Returns:
+        np.ndarray: Extracted features.
+        """
         if img_array is None:
             return None
         features = self.model.predict(img_array)
         return features.flatten()
 
     def _detect_faces(self, img, confidence_threshold=0.95):
+        """
+        Detects faces in the image using MTCNN.
+
+        Parameters:
+        img (np.ndarray): Image to detect faces in.
+        confidence_threshold (float): Confidence threshold for face detection.
+
+        Returns:
+        list: List of detected faces.
+        """
         small_img = cv2.resize(img, (160, 120))
         faces = self.detector.detect_faces(small_img)
         for face in faces:
@@ -130,6 +257,9 @@ class VideoCamera:
         return filtered_faces
 
     def load_known_faces(self):
+        """
+        Loads known faces from the specified directory.
+        """
         known_faces_dir = settings.KNOWN_FACES_DIR
         for filename in os.listdir(known_faces_dir):
             if filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".png"):
@@ -140,8 +270,21 @@ class VideoCamera:
                 if face_features is not None:
                     self.known_faces_features.append(face_features)
                     self.known_faces_labels.append(label)
+                    logger.debug(f"Loaded known face: {label} with features: {face_features}")
+                else:
+                    logger.debug(f"Failed to extract features for known face: {label}")
+
 
     def _preprocess_and_extract(self, img):
+        """
+        Detects and extracts features from the face in the image.
+
+        Parameters:
+        img (np.ndarray): Image to process.
+
+        Returns:
+        np.ndarray: Extracted features of the face.
+        """
         faces = self._detect_faces(img)
         if faces:
             x, y, width, height = faces[0]['box']
@@ -154,6 +297,15 @@ class VideoCamera:
         return None
 
     def detect_movement(self, frame):
+        """
+        Detects movement in the frame.
+
+        Parameters:
+        frame (np.ndarray): Frame to detect movement in.
+
+        Returns:
+        tuple: Boolean indicating if movement is detected and the bounding box of the movement.
+        """
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
@@ -177,6 +329,12 @@ class VideoCamera:
         return False, None
 
     def get_frame(self):
+        """
+        Captures a frame from the video device and processes it for movement and face detection.
+
+        Returns:
+        bytes: Encoded frame in JPEG format.
+        """
         if not self.video:
             return None
         success, image = self.video.read()
@@ -225,6 +383,9 @@ class VideoCamera:
         return jpeg.tobytes()
 
     def _process_frames(self):
+        """
+        Processes frames for face recognition in a separate thread.
+        """
         while True:
             if not self.frames:
                 time.sleep(0.01)
@@ -239,6 +400,9 @@ class VideoCamera:
                 self.face_recognition_counter = 0
 
     def _recognize_faces(self, frame):
+        """
+        Recognizes faces in the frame and logs the detected faces.
+        """
         gray_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         gray_image_3ch = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
         faces = self._detect_faces(gray_image_3ch)
@@ -253,22 +417,34 @@ class VideoCamera:
                 continue
             features = self._extract_features(face_array)
             min_distance = float('inf')
-            label = None
+            label = 'Unknown'
+            logger.debug(f"Extracted features for detected face: {features}")
             for known_features, known_label in zip(self.known_faces_features, self.known_faces_labels):
                 distance = euclidean(features, known_features)
+                logger.debug(f"Distance to known face {known_label}: {distance}")
                 if distance < min_distance:
                     min_distance = distance
                     label = known_label
-            face['label'] = label if label else 'Unknown'
+            logger.debug(f"Min distance: {min_distance}, Threshold: {RECOGNITION_THRESHOLD}")
+            if min_distance > RECOGNITION_THRESHOLD:
+                label = 'Unknown'
+            face['label'] = label
             recognized_faces.append(face)
 
             # Save the face image
-            self.save_face_image(face_img, label)
+            self.save_face_image(face_img, face['label'])
 
         with self.lock:
             self.detected_faces = recognized_faces
-
+        with self.lock:
+            self.detected_faces = recognized_faces
     def log_event(self, event):
+        """
+        Logs an event and sends an email snapshot if necessary.
+
+        Parameters:
+        event (str): Event description.
+        """
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         log_entry = f"[{timestamp}] {event}"
         self.alert_buffer.append(log_entry)
@@ -278,6 +454,9 @@ class VideoCamera:
             self.last_alert_time = time.time()
 
     def send_email_snapshot(self):
+        """
+        Sends an email with a snapshot of the detected event.
+        """
         if not self.alert_buffer:
             return
         try:
@@ -324,6 +503,16 @@ class VideoCamera:
             print(f"Failed to send snapshot email: {str(e)}")
 
     def select_representative_frames(self, frames, num_frames):
+        """
+        Selects representative frames from the buffer.
+
+        Parameters:
+        frames (list): List of frames.
+        num_frames (int): Number of frames to select.
+
+        Returns:
+        list: List of selected frames.
+        """
         if len(frames) <= num_frames:
             return frames
         interval = len(frames) // num_frames
@@ -331,6 +520,13 @@ class VideoCamera:
         return selected_frames
 
     def save_face_image(self, face_img, label):
+        """
+        Saves the face image to the specified directory.
+
+        Parameters:
+        face_img (np.ndarray): Face image to save.
+        label (str): Label of the face.
+        """
         faces_seen_dir = os.path.join(settings.MEDIA_ROOT, 'faces_seen')
         if not os.path.exists(faces_seen_dir):
             os.makedirs(faces_seen_dir)
@@ -346,6 +542,9 @@ class VideoCamera:
         print(f"Face record saved: {label}, {filename}")
 
     def save_running_buffer_clip(self):
+        """
+        Saves a video clip from the running buffer.
+        """
         if self.running_buffer:
             event_clips_dir = os.path.join(settings.MEDIA_ROOT, 'event_clips')
             if not os.path.exists(event_clips_dir):
@@ -382,6 +581,12 @@ class VideoCamera:
             self.save_timer.start()
 
     def _initialize_audio(self):
+        """
+        Initializes the audio stream for recording.
+
+        Returns:
+        pyaudio.Stream: Initialized audio stream.
+        """
         try:
             audio = pyaudio.PyAudio()
             stream = audio.open(format=pyaudio.paInt16,
@@ -396,6 +601,12 @@ class VideoCamera:
             return None
 
     def save_audio_clip(self, file_path):
+        """
+        Saves the recorded audio clip to the specified file path.
+
+        Parameters:
+        file_path (str): Path to save the audio clip.
+        """
         if not self.audio_stream:
             print("Audio stream is not initialized. Cannot save audio clip.")
             return
@@ -412,12 +623,21 @@ class VideoCamera:
             print(f"Error saving audio clip: {e}")
 
     def combine_audio_video(self, video_path, audio_path, output_path):
+        """
+        Combines the audio and video into a single file.
+
+        Parameters:
+        video_path (str): Path to the video file.
+        audio_path (str): Path to the audio file.
+        output_path (str): Path to save the combined file.
+        """
         try:
             command = f"ffmpeg -i {video_path} -i {audio_path} -c:v copy -c:a aac {output_path}"
             subprocess.call(command, shell=True)
             print(f"Audio and video combined: {output_path}")
         except Exception as e:
             print(f"Error combining audio and video: {e}")
+
 
 # import threading
 # from concurrent.futures import ThreadPoolExecutor

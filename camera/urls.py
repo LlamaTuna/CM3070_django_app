@@ -16,3 +16,88 @@ urlpatterns = [
     path('get_logs/', views.get_logs, name='get_logs'),
     path('upload_face/', views.upload_face, name='upload_face'),
 ]
+
+"""
+URL patterns for the camera app.
+
+Each URL pattern maps a specific URL path to a view function or class-based view.
+"""
+
+# Explanation of URL patterns:
+
+"""
+admin/:
+    Purpose: Displays the admin view.
+    View Function: views.admin_view
+    Name: admin_view
+"""
+
+"""
+/:
+    Purpose: Displays the index page.
+    View Function: views.index
+    Name: index
+"""
+
+"""
+register/:
+    Purpose: Allows users to register.
+    View Function: views.register
+    Name: register
+"""
+
+"""
+login/:
+    Purpose: Allows users to log in.
+    View Class: auth_views.LoginView
+    Template: camera/login.html
+    Name: login
+"""
+
+"""
+logout/:
+    Purpose: Allows users to log out.
+    View Class: auth_views.LogoutView
+    Name: logout
+"""
+
+"""
+list_faces/:
+    Purpose: Displays a list of faces.
+    View Function: views.list_faces
+    Name: list_faces
+"""
+
+"""
+tag_face/<int:face_id>/:
+    Purpose: Allows users to tag a face with a given ID.
+    View Function: views.tag_face
+    Name: tag_face
+"""
+
+"""
+video_feed/:
+    Purpose: Streams the video feed.
+    View Function: views.video_feed
+    Name: video_feed
+"""
+
+"""
+accounts/:
+    Purpose: Includes the default authentication URLs provided by Django.
+    Include: django.contrib.auth.urls
+"""
+
+"""
+get_logs/:
+    Purpose: Retrieves the logs.
+    View Function: views.get_logs
+    Name: get_logs
+"""
+
+"""
+upload_face/:
+    Purpose: Allows users to upload a face.
+    View Function: views.upload_face
+    Name: upload_face
+"""
