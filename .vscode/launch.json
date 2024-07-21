@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Django",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/camera_app/manage.py",
+            "args": [
+                "runserver",
+                "--noreload"
+            ],
+            "django": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "python": "/home/vance_octane/.pyenv/versions/3.8.12/bin/python",
+            "justMyCode": true
+        }
+    ]
+}
