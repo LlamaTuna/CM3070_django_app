@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['wsgi_2epy_32',['wsgi.py',['../wsgi_8py.html',1,'']]],
-  ['wsgi_5fapplication_33',['WSGI_APPLICATION',['../namespacecamera__app_1_1settings.html#a26b0ca5faa95a8e804b2896017e67afe',1,'camera_app::settings']]]
+  ['name_124',['name',['../classcamera_1_1apps_1_1CameraConfig.html#a80b8a046f4e60badd99eb964e2265fac',1,'camera.apps.CameraConfig.name()'],['../classcamera_1_1models_1_1Face.html#aeb648981953d8c325ec9391e2d119e64',1,'camera.models.Face.name()']]]
 ];

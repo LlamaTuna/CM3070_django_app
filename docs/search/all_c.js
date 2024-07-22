@@ -1,7 +1,13 @@
 var searchData=
 [
-  ['urlpatterns_28',['urlpatterns',['../namespacecamera__app_1_1urls.html#a2f6bb9e2ab53b6f60f30c841701f6b67',1,'camera_app::urls']]],
-  ['urls_2epy_29',['urls.py',['../urls_8py.html',1,'']]],
-  ['use_5fi18n_30',['USE_I18N',['../namespacecamera__app_1_1settings.html#acca092be3bb2c6c0f8759412327a0634',1,'camera_app::settings']]],
-  ['use_5ftz_31',['USE_TZ',['../namespacecamera__app_1_1settings.html#a6b5b8638cf341a532a540370c584ff26',1,'camera_app::settings']]]
+  ['main_114',['main',['../namespacemanage.html#afd5b00260cc364aa5bde07e227c6ea78',1,'manage']]],
+  ['manage_115',['manage',['../namespacemanage.html',1,'']]],
+  ['manage_2epy_116',['manage.py',['../manage_8py.html',1,'']]],
+  ['media_5froot_117',['MEDIA_ROOT',['../namespacecamera__app_1_1settings.html#a356793963e5bc96777d057cf5df2ead9',1,'camera_app::settings']]],
+  ['media_5furl_118',['MEDIA_URL',['../namespacecamera__app_1_1settings.html#a8b6ba3d0541f9e9fbeb57d2b93e7321b',1,'camera_app::settings']]],
+  ['meta_119',['Meta',['../classcamera_1_1forms_1_1CustomUserCreationForm_1_1Meta.html',1,'camera.forms.CustomUserCreationForm.Meta'],['../classcamera_1_1forms_1_1RegisterForm_1_1Meta.html',1,'camera.forms.RegisterForm.Meta'],['../classcamera_1_1forms_1_1TagFaceForm_1_1Meta.html',1,'camera.forms.TagFaceForm.Meta'],['../classcamera_1_1forms_1_1UploadFaceForm_1_1Meta.html',1,'camera.forms.UploadFaceForm.Meta']]],
+  ['middleware_120',['MIDDLEWARE',['../namespacecamera__app_1_1settings.html#a9d19a7fcc4ffb5e8fbe35f87df5ba88b',1,'camera_app::settings']]],
+  ['migration_121',['Migration',['../classcamera_1_1migrations_1_10001__initial_1_1Migration.html',1,'camera.migrations.0001_initial.Migration'],['../classcamera_1_1migrations_1_10002__emailsettings_1_1Migration.html',1,'camera.migrations.0002_emailsettings.Migration'],['../classcamera_1_1migrations_1_10003__alter__emailsettings__smtp__password__and__more_1_1Migration.html',1,'camera.migrations.0003_alter_emailsettings_smtp_password_and_more.Migration'],['../classcamera_1_1migrations_1_10004__alter__emailsettings__smtp__password__and__more_1_1Migration.html',1,'camera.migrations.0004_alter_emailsettings_smtp_password_and_more.Migration'],['../classcamera_1_1migrations_1_10005__delete__emailsettings_1_1Migration.html',1,'camera.migrations.0005_delete_emailsettings.Migration']]],
+  ['model_122',['model',['../classcamera_1_1forms_1_1CustomUserCreationForm_1_1Meta.html#abf4df0a1acddd38479f0bade3e1434fd',1,'camera.forms.CustomUserCreationForm.Meta.model()'],['../classcamera_1_1forms_1_1TagFaceForm_1_1Meta.html#a8565c537f7f8e00b110107743331f007',1,'camera.forms.TagFaceForm.Meta.model()'],['../classcamera_1_1forms_1_1RegisterForm_1_1Meta.html#a445c9db18afce96a6d92b8df4f472071',1,'camera.forms.RegisterForm.Meta.model()'],['../classcamera_1_1forms_1_1UploadFaceForm_1_1Meta.html#a6c80f02adfc0153af3f4bc40cd4770d4',1,'camera.forms.UploadFaceForm.Meta.model()'],['../classcamera_1_1video__camera_1_1VideoCamera.html#a7b9234ff019574461d0e93a6ef780997',1,'camera.video_camera.VideoCamera.model()']]],
+  ['models_2epy_123',['models.py',['../models_8py.html',1,'']]]
 ];
