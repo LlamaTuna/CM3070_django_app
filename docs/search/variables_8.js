@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['secret_5fkey_59',['SECRET_KEY',['../namespacecamera__app_1_1settings.html#ae1c3156cbd8e63802980b273c5dfb410',1,'camera_app::settings']]],
-  ['static_5furl_60',['STATIC_URL',['../namespacecamera__app_1_1settings.html#ac971c2a9112a4c6497deb1a6ec8db48f',1,'camera_app::settings']]],
-  ['staticfiles_5fdirs_61',['STATICFILES_DIRS',['../namespacecamera__app_1_1settings.html#ac4a36b4c941529db64c071629d55d497',1,'camera_app::settings']]]
+  ['known_5ffaces_5fdir_314',['KNOWN_FACES_DIR',['../namespacecamera__app_1_1settings.html#af3d98df902aa1a6974de2d9c7fc5e1c9',1,'camera_app::settings']]],
+  ['known_5ffaces_5ffeatures_315',['known_faces_features',['../classcamera_1_1video__camera_1_1VideoCamera.html#af85beec252279ce4d633b308d71ebd94',1,'camera::video_camera::VideoCamera']]],
+  ['known_5ffaces_5flabels_316',['known_faces_labels',['../classcamera_1_1video__camera_1_1VideoCamera.html#af7b15fd9680a615077e3ed14424dcb26',1,'camera::video_camera::VideoCamera']]]
 ];

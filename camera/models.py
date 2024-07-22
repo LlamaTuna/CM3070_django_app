@@ -1,6 +1,7 @@
 # camera/models.py
-from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.models import AbstractUser, Group, Permission, User
 from django.db import models
+from django.conf import settings
 
 class CustomUser(AbstractUser):
     """
@@ -48,3 +49,12 @@ class Face(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='faces_seen/')
     tagged = models.BooleanField(default=False)
+
+
+class EmailSettings(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    email = models.EmailField()
+    smtp_server = models.CharField(max_length=100)
+    smtp_port = models.IntegerField()
+    smtp_user = models.CharField(max_length=100)
+    smtp_password = models.CharField(max_length=100)

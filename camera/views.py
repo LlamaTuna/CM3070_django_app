@@ -22,6 +22,8 @@ from .utils import reconcile_faces
 import pytz
 import logging
 from .video_camera import VideoCamera
+from .forms import EmailSettingsForm
+from .models import EmailSettings
 
 # Check if the script is running a management command
 import sys
@@ -72,19 +74,30 @@ def get_logs(request):
     return JsonResponse({'logs': log_data})
 
 
-# Initialize the camera processing
-def initialize_camera():
-    """
-    Initialize the camera instance.
-    """
+# # Initialize the camera processing
+# def initialize_camera():
+#     """
+#     Initialize the camera instance.
+#     """
+#     global camera_instance
+#     if camera_instance is None:
+#         camera_instance = VideoCamera()
+#         if camera_instance.video is None:
+#             camera_instance = None
+#             print("Failed to initialize camera.")
+#         else:
+#             print("Camera initialized successfully.")
+
+def initialize_camera(request):
     global camera_instance
     if camera_instance is None:
-        camera_instance = VideoCamera()
+        camera_instance = VideoCamera(request=request)
         if camera_instance.video is None:
             camera_instance = None
             print("Failed to initialize camera.")
         else:
             print("Camera initialized successfully.")
+
 
 # Initialize the camera processing
 if not is_management_command:
@@ -108,18 +121,26 @@ def gen(camera):
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
+# def video_feed(request):
+#     """
+#     Returns a streaming HTTP response with frames from the camera.
+
+#     Args:
+#         request (HttpRequest): The HTTP request object.
+
+#     Returns:
+#         StreamingHttpResponse: The streaming HTTP response.
+#     """
+#     return StreamingHttpResponse(gen(camera_instance),
+#                                  content_type='multipart/x-mixed-replace; boundary=frame')
+
 def video_feed(request):
-    """
-    Returns a streaming HTTP response with frames from the camera.
-
-    Args:
-        request (HttpRequest): The HTTP request object.
-
-    Returns:
-        StreamingHttpResponse: The streaming HTTP response.
-    """
+    global camera_instance
+    if camera_instance is None:
+        initialize_camera(request)
     return StreamingHttpResponse(gen(camera_instance),
                                  content_type='multipart/x-mixed-replace; boundary=frame')
+
 
 def index(request):
     """
@@ -272,3 +293,24 @@ def upload_face(request):
     else:
         form = UploadFaceForm()
     return render(request, 'camera/upload_face.html', {'form': form})
+
+
+@login_required
+def email_settings(request):
+    try:
+        email_settings = EmailSettings.objects.get(user=request.user)
+    except EmailSettings.DoesNotExist:
+        email_settings = None
+
+    if request.method == 'POST':
+        form = EmailSettingsForm(request.POST, instance=email_settings)
+        if form.is_valid():
+            email_settings = form.save(commit=False)
+            email_settings.user = request.user
+            email_settings.save()
+            print("Email settings saved:", email_settings.__dict__)  # Debug statement
+            return redirect('email_settings')
+    else:
+        form = EmailSettingsForm(instance=email_settings)
+    
+    return render(request, 'camera/email_settings.html', {'form': form})

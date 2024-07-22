@@ -1,7 +1,7 @@
 from django import forms
 from .models import Face
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, User
-from .models import CustomUser
+from .models import CustomUser, EmailSettings
 
 class CustomUserCreationForm(UserCreationForm):
     """
@@ -52,3 +52,8 @@ class UploadFaceForm(forms.ModelForm):
     class Meta:
         model = Face
         fields = ['name', 'image']
+
+class EmailSettingsForm(forms.ModelForm):
+    class Meta:
+        model = EmailSettings
+        fields = ['smtp_server', 'smtp_port', 'smtp_user', 'smtp_password', 'email']
