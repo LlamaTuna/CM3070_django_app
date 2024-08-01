@@ -11,12 +11,16 @@ class SendEmail:
         self.request = request
         self.alert_buffer = []
         self.frame_buffer = []
+        self.detected_faces = []  # Add this attribute
 
     def log_event(self, event):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         log_entry = f"[{timestamp}] {event}"
         self.alert_buffer.append(log_entry)
         print("SendEmail logged event:", log_entry)
+
+    def set_detected_faces(self, faces):  # Add this method
+        self.detected_faces = faces
 
     def send_email_snapshot(self):
         print("Attempting to send email snapshot...")
@@ -44,6 +48,12 @@ class SendEmail:
             msg['From'] = from_email
             msg['To'] = to_email
             msg['Subject'] = subject
+
+            if self.detected_faces:
+                body += "\n\nDetected Faces:\n"
+                for i, face in enumerate(self.detected_faces):
+                    label = face.get('label', 'Unknown')
+                    body += f"Person {i + 1}: {label}\n"
 
             msg.attach(MIMEText(body, 'plain'))
 

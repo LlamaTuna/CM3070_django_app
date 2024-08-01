@@ -121,6 +121,7 @@ class VideoCamera:
                 recognized_faces = self.facial_recognition.recognize_faces(frame)
                 with self.lock:
                     self.detected_faces = recognized_faces
+                self.send_email.set_detected_faces(recognized_faces)  # Pass detected faces to SendEmail
                 self.face_recognition_counter = 0
 
     def save_running_buffer_clip(self):
