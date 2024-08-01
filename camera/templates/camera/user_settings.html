@@ -1,0 +1,13 @@
+<!-- camera_app/templates/camera/user_settings.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>User Settings</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+  </form>
+  <a href="{% url 'email_settings' %}" class="btn btn-primary mt-3">Email Settings</a>
+{% endblock %}

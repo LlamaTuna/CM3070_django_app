@@ -22,7 +22,7 @@ from .utils import reconcile_faces
 import pytz
 import logging
 from .video_camera import VideoCamera
-from .forms import EmailSettingsForm
+from .forms import EmailSettingsForm, UserSettingsForm
 from .models import EmailSettings
 
 # Check if the script is running a management command
@@ -73,21 +73,6 @@ def get_logs(request):
     print("Fetching logs:", log_data)  # Debug statement
     return JsonResponse({'logs': log_data})
 
-
-# # Initialize the camera processing
-# def initialize_camera():
-#     """
-#     Initialize the camera instance.
-#     """
-#     global camera_instance
-#     if camera_instance is None:
-#         camera_instance = VideoCamera()
-#         if camera_instance.video is None:
-#             camera_instance = None
-#             print("Failed to initialize camera.")
-#         else:
-#             print("Camera initialized successfully.")
-
 def initialize_camera(request):
     global camera_instance
     if camera_instance is None:
@@ -97,7 +82,6 @@ def initialize_camera(request):
             print("Failed to initialize camera.")
         else:
             print("Camera initialized successfully.")
-
 
 # Initialize the camera processing
 if not is_management_command:
@@ -121,26 +105,12 @@ def gen(camera):
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
-# def video_feed(request):
-#     """
-#     Returns a streaming HTTP response with frames from the camera.
-
-#     Args:
-#         request (HttpRequest): The HTTP request object.
-
-#     Returns:
-#         StreamingHttpResponse: The streaming HTTP response.
-#     """
-#     return StreamingHttpResponse(gen(camera_instance),
-#                                  content_type='multipart/x-mixed-replace; boundary=frame')
-
 def video_feed(request):
     global camera_instance
     if camera_instance is None:
         initialize_camera(request)
     return StreamingHttpResponse(gen(camera_instance),
                                  content_type='multipart/x-mixed-replace; boundary=frame')
-
 
 def index(request):
     """
@@ -200,7 +170,6 @@ def tag_face(request, face_id):
     else:
         form = TagFaceForm(instance=face)
     return render(request, 'camera/tag_face.html', {'form': form})
-
 
 @staff_member_required
 def admin_view(request):
@@ -294,7 +263,6 @@ def upload_face(request):
         form = UploadFaceForm()
     return render(request, 'camera/upload_face.html', {'form': form})
 
-
 @login_required
 def email_settings(request):
     try:
@@ -314,3 +282,14 @@ def email_settings(request):
         form = EmailSettingsForm(instance=email_settings)
     
     return render(request, 'camera/email_settings.html', {'form': form})
+
+@login_required
+def user_settings(request):
+    if request.method == 'POST':
+        form = UserSettingsForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('user_settings')
+    else:
+        form = UserSettingsForm(instance=request.user)
+    return render(request, 'camera/user_settings.html', {'form': form})
