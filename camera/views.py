@@ -84,10 +84,7 @@ def initialize_camera(request):
             print("Camera initialized successfully.")
 
 # Initialize the camera processing
-if not is_management_command:
-    camera_thread = threading.Thread(target=initialize_camera)
-    camera_thread.daemon = True
-    camera_thread.start()
+# Remove the threading context here as request argument is not available in this context
 
 def gen(camera):
     """

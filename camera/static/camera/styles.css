@@ -109,6 +109,7 @@ textarea {
 .tag-button:hover {
     background-color: rgba(255, 255, 255, 0.2) !important; /* Lighter hover effect */
 }
+
 /* Navbar styles */
 .navbar {
     background-color: #1e1e1e !important; /* Dark background color for the navbar */
@@ -132,4 +133,19 @@ textarea {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 15px;
+}
+
+/* Dropdown menu styles */
+.dropdown-menu {
+    background-color: #1e1e1e !important; /* Dark background color */
+    border: 1px solid #333 !important; /* Darker border */
+}
+
+.dropdown-item {
+    color: #e0e0e0 !important; /* Light text color */
+}
+
+.dropdown-item:hover {
+    background-color: #333 !important; /* Darker hover background */
+    color: #ffffff !important; /* Brighter text color on hover */
 }

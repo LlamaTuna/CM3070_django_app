@@ -16,6 +16,8 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+MODEL_DIR = os.path.join(BASE_DIR, 'camera_app', 'models')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -120,3 +122,8 @@ KNOWN_FACES_DIR = os.path.join(MEDIA_ROOT, 'known_faces')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = 'index'  
+
+LOGOUT_REDIRECT_URL = 'index'  
+

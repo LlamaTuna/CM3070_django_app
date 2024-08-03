@@ -23,6 +23,9 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 ADD . /app
 
+# Copy the dlib shape predictor model file to the appropriate directory
+COPY camera/models/shape_predictor_68_face_landmarks.dat /app/camera/models/
+
 # Use a reliable PyPI mirror
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
