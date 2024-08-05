@@ -1,5 +1,7 @@
 import threading
-from django.http import StreamingHttpResponse, JsonResponse
+import cv2
+import time
+from django.http import StreamingHttpResponse, JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -7,8 +9,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login
 from .models import Face, Event
 from .forms import TagFaceForm, CustomUserCreationForm, UploadFaceForm
-import cv2
-import numpy as np
 from mtcnn.mtcnn import MTCNN
 from scipy.spatial.distance import euclidean
 import os
@@ -24,6 +24,7 @@ import logging
 from .video_camera import VideoCamera
 from .forms import EmailSettingsForm, UserSettingsForm
 from .models import EmailSettings
+import os
 
 # Check if the script is running a management command
 import sys
@@ -42,6 +43,18 @@ logs = []
 
 # Global variable to hold the camera instance
 camera_instance = None
+camera_instances = []
+
+def list_cameras():
+    camera_indices = []
+    for filename in os.listdir('/dev'):
+        if filename.startswith('video'):
+            try:
+                camera_indices.append(int(filename[5:]))  # Extract the index from 'videoX'
+            except ValueError:
+                pass  # Ignore non-numeric suffixes
+    print("Camera indices:", camera_indices) 
+    return camera_indices
 
 def log_event(event):
     """
@@ -73,18 +86,32 @@ def get_logs(request):
     print("Fetching logs:", log_data)  # Debug statement
     return JsonResponse({'logs': log_data})
 
-def initialize_camera(request):
+def initialize_camera(request, camera_index=0):
     global camera_instance
-    if camera_instance is None:
-        camera_instance = VideoCamera(request=request)
-        if camera_instance.video is None:
-            camera_instance = None
-            print("Failed to initialize camera.")
-        else:
-            print("Camera initialized successfully.")
+    camera_instance = VideoCamera(camera_index=camera_index, request=request)
+    if camera_instance.video is None:
+        camera_instance = None
+        print(f"Failed to initialize camera with index {camera_index}.")
+        return False
+    else:
+        print(f"Camera with index {camera_index} initialized successfully.")
+        return True
 
-# Initialize the camera processing
-# Remove the threading context here as request argument is not available in this context
+def find_all_cameras(max_cameras=10):
+    available_cameras = []
+    for i in range(max_cameras):
+        cap = cv2.VideoCapture(i)
+        if cap.isOpened():
+            available_cameras.append(i)
+            cap.release()
+        else:
+            print(f"Camera index {i} could not be opened.")
+    return available_cameras
+
+def initialize_all_cameras():
+    available_cameras = find_all_cameras(10)  # Check first 10 indices for available cameras
+    print("Initialized cameras:", available_cameras)
+    return available_cameras
 
 def gen(camera):
     """
@@ -102,16 +129,13 @@ def gen(camera):
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
-def video_feed(request):
-    global camera_instance
-    if camera_instance is None:
-        initialize_camera(request)
-    return StreamingHttpResponse(gen(camera_instance),
+def video_feed(request, camera_index):
+    return StreamingHttpResponse(gen(VideoCamera(camera_index, request=request)),
                                  content_type='multipart/x-mixed-replace; boundary=frame')
 
 def index(request):
     """
-    Renders the index page.
+    Renders the index page with available camera indices.
 
     Args:
         request (HttpRequest): The HTTP request object.
@@ -119,7 +143,8 @@ def index(request):
     Returns:
         HttpResponse: The rendered index page.
     """
-    return render(request, 'camera/index.html')
+    camera_indices = list_cameras()
+    return render(request, 'camera/index.html', {'camera_indices': camera_indices})
 
 @login_required
 def list_faces(request):
@@ -290,3 +315,9 @@ def user_settings(request):
     else:
         form = UserSettingsForm(instance=request.user)
     return render(request, 'camera/user_settings.html', {'form': form})
+
+def camera_view(request, camera_index=0):
+    # Initialize camera with request
+    camera = VideoCamera(camera_index=camera_index, request=request)
+    # Render a template or perform other logic
+    return render(request, 'camera_view.html', {'camera_index': camera_index})

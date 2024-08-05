@@ -1,0 +1,93 @@
+         1162 function calls in 8.432 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    8.432    8.432 runserver.py:113(run)
+        1    0.000    0.000    8.432    8.432 autoreload.py:663(run_with_reloader)
+        1    0.000    0.000    8.432    8.432 autoreload.py:270(restart_with_reloader)
+        1    0.000    0.000    8.432    8.432 subprocess.py:452(run)
+        1    0.000    0.000    8.432    8.432 subprocess.py:984(communicate)
+        2    0.000    0.000    8.432    4.216 subprocess.py:1078(wait)
+        2    0.000    0.000    8.432    4.216 subprocess.py:1774(_wait)
+        1    0.000    0.000    8.432    8.432 subprocess.py:1761(_try_wait)
+        1    8.432    8.432    8.432    8.432 {built-in method posix.waitpid}
+        1    0.000    0.000    0.000    0.000 subprocess.py:736(__init__)
+        1    0.000    0.000    0.000    0.000 subprocess.py:1552(_execute_child)
+        1    0.000    0.000    0.000    0.000 subprocess.py:1513(_posix_spawn)
+        1    0.000    0.000    0.000    0.000 {built-in method posix.posix_spawn}
+      107    0.000    0.000    0.000    0.000 os.py:670(__getitem__)
+      107    0.000    0.000    0.000    0.000 _collections_abc.py:719(__iter__)
+      212    0.000    0.000    0.000    0.000 os.py:752(decode)
+      107    0.000    0.000    0.000    0.000 os.py:693(__iter__)
+        1    0.000    0.000    0.000    0.000 autoreload.py:221(get_child_arguments)
+      107    0.000    0.000    0.000    0.000 os.py:748(encode)
+      212    0.000    0.000    0.000    0.000 {method 'decode' of 'bytes' objects}
+        1    0.000    0.000    0.000    0.000 subprocess.py:1708(_handle_exitstatus)
+        1    0.000    0.000    0.000    0.000 pathlib.py:1039(__new__)
+        1    0.000    0.000    0.000    0.000 pathlib.py:1402(exists)
+        1    0.000    0.000    0.000    0.000 pathlib.py:678(_from_parts)
+        1    0.000    0.000    0.000    0.000 pathlib.py:1193(stat)
+        1    0.000    0.000    0.000    0.000 {built-in method posix.stat}
+      113    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}
+      107    0.000    0.000    0.000    0.000 {method 'encode' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 subprocess.py:1101(_close_pipe_fds)
+        1    0.000    0.000    0.000    0.000 pathlib.py:658(_parse_args)
+        1    0.000    0.000    0.000    0.000 signal.py:45(signal)
+        1    0.000    0.000    0.000    0.000 abc.py:96(__instancecheck__)
+        1    0.000    0.000    0.000    0.000 subprocess.py:911(__exit__)
+        1    0.000    0.000    0.000    0.000 {built-in method _abc._abc_instancecheck}
+        1    0.000    0.000    0.000    0.000 posixpath.py:150(dirname)
+        1    0.000    0.000    0.000    0.000 pathlib.py:64(parse_parts)
+        1    0.000    0.000    0.000    0.000 abc.py:100(__subclasscheck__)
+        1    0.000    0.000    0.000    0.000 contextlib.py:482(__exit__)
+        1    0.000    0.000    0.000    0.000 _collections_abc.py:657(get)
+        1    0.000    0.000    0.000    0.000 {built-in method _abc._abc_subclasscheck}
+        1    0.000    0.000    0.000    0.000 pathlib.py:728(__fspath__)
+        1    0.000    0.000    0.000    0.000 subprocess.py:430(__init__)
+        2    0.000    0.000    0.000    0.000 signal.py:35(_enum_to_int)
+        1    0.000    0.000    0.000    0.000 pathlib.py:718(__str__)
+        1    0.000    0.000    0.000    0.000 subprocess.py:1052(poll)
+        5    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+        1    0.000    0.000    0.000    0.000 {built-in method posix.WIFSIGNALED}
+        1    0.000    0.000    0.000    0.000 subprocess.py:939(__del__)
+        1    0.000    0.000    0.000    0.000 signal.py:25(_int_to_enum)
+        1    0.000    0.000    0.000    0.000 os.py:1073(__subclasshook__)
+        1    0.000    0.000    0.000    0.000 enum.py:313(__call__)
+        1    0.000    0.000    0.000    0.000 pathlib.py:1049(_init)
+        1    0.000    0.000    0.000    0.000 pathlib.py:701(_format_parsed_parts)
+        1    0.000    0.000    0.000    0.000 {built-in method _signal.signal}
+        2    0.000    0.000    0.000    0.000 subprocess.py:1726(_internal_poll)
+        1    0.000    0.000    0.000    0.000 _collections_abc.py:72(_check_methods)
+        1    0.000    0.000    0.000    0.000 _collections_abc.py:672(keys)
+        1    0.000    0.000    0.000    0.000 contextlib.py:385(__init__)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method sys.exit}
+        1    0.000    0.000    0.000    0.000 {method 'extend' of 'list' objects}
+        4    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method sys.exc_info}
+        1    0.000    0.000    0.000    0.000 enum.py:631(__new__)
+        1    0.000    0.000    0.000    0.000 {method 'rfind' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 subprocess.py:241(_cleanup)
+        1    0.000    0.000    0.000    0.000 pathlib.py:293(splitroot)
+        1    0.000    0.000    0.000    0.000 posixpath.py:41(_get_sep)
+        1    0.000    0.000    0.000    0.000 subprocess.py:1459(_get_handles)
+        1    0.000    0.000    0.000    0.000 {built-in method posix.WTERMSIG}
+        1    0.000    0.000    0.000    0.000 {built-in method __new__ of type object at 0x7b0d16d4b980}
+        1    0.000    0.000    0.000    0.000 {built-in method sys.intern}
+        1    0.000    0.000    0.000    0.000 _collections_abc.py:698(__init__)
+        1    0.000    0.000    0.000    0.000 {method 'rstrip' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method _thread.allocate_lock}
+        2    0.000    0.000    0.000    0.000 {built-in method posix.fspath}
+        1    0.000    0.000    0.000    0.000 {method 'count' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 autoreload.py:231(<listcomp>)
+        1    0.000    0.000    0.000    0.000 autoreload.py:233(<genexpr>)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+        1    0.000    0.000    0.000    0.000 subprocess.py:908(__enter__)
+        1    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method sys.audit}
+        1    0.000    0.000    0.000    0.000 contextlib.py:479(__enter__)
+        1    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 {method 'reverse' of 'list' objects}
+
+

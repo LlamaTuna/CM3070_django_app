@@ -53,6 +53,7 @@ class SendEmail:
                 body += "\n\nDetected Faces:\n"
                 for i, face in enumerate(self.detected_faces):
                     label = face.get('label', 'Unknown')
+                    print(f"Face {i + 1}: {label}")
                     body += f"Person {i + 1}: {label}\n"
 
             msg.attach(MIMEText(body, 'plain'))

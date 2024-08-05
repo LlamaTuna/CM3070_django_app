@@ -17,8 +17,8 @@ class SaveAudio:
                                 frames_per_buffer=1024)
             print("Audio stream initialized")
             return stream
-        except Exception as e:
-            print(f"Error initializing audio: {e}")
+        except OSError as e:  # Catch OSError specifically for device-related errors
+            print(f"Error initializing audio: {e}. Please check your audio device settings.")
             return None
 
     def save_audio_clip(self, file_path):
