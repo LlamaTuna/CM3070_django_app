@@ -1,3 +1,4 @@
+#video_camera.py
 import threading
 import cv2
 import time
@@ -13,19 +14,21 @@ from django.conf import settings
 from .models import Event
 
 class VideoCamera:
-    def __init__(self, resolution=(320, 240), request=None):
-        self.video = cv2.VideoCapture(0)
+    def __init__(self, camera_index=0, resolution=(320, 240), request=None):
+        self.video = cv2.VideoCapture(camera_index)
         if not self.video.isOpened():
-            print("Error: Could not open video device.")
+            print(f"Error: Could not open video device at {camera_index}.")
             self.video = None
-        else:
-            self.video.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
-            self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
+            # self.save_audio = None  # Initialize save_audio even if the video fails
+            return
+
+        self.video.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
+        self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
 
         self.movement_detection = MovementDetection()
         self.facial_recognition = FacialRecognition()
         self.send_email = SendEmail(request)
-        self.save_audio = SaveAudio()
+        # self.save_audio = SaveAudio()  
 
         self.frame_skip_interval = 2
         self.frame_count = 0
@@ -35,9 +38,12 @@ class VideoCamera:
         self.lock = threading.Lock()
         self.frames = []
         self.detected_faces = []
+        
 
         self.executor = ThreadPoolExecutor(max_workers=1)
         self.executor.submit(self._process_frames)
+
+        self.email_executor = ThreadPoolExecutor(max_workers=1)  # Executor for email sending
 
         self.save_timer = threading.Timer(60, self.save_running_buffer_clip)
         self.save_timer.start()
@@ -50,11 +56,15 @@ class VideoCamera:
     def __del__(self):
         if self.video:
             self.video.release()
-        self.save_timer.cancel()
-        self.executor.shutdown(wait=False)
-        if self.save_audio.audio_stream:
-            self.save_audio.audio_stream.stop_stream()
-            self.save_audio.audio_stream.close()
+        if hasattr(self, 'save_timer'):
+            self.save_timer.cancel()
+        if hasattr(self, 'executor'):
+            self.executor.shutdown(wait=False)
+        if hasattr(self, 'email_executor'):  # Ensure the email executor is shut down properly
+            self.email_executor.shutdown(wait=False)
+        # if self.save_audio and hasattr(self.save_audio, 'audio_stream') and self.save_audio.audio_stream:
+        #     self.save_audio.audio_stream.stop_stream()
+        #     self.save_audio.audio_stream.close()
 
     def get_frame(self):
         if not self.video:
@@ -78,11 +88,13 @@ class VideoCamera:
             cv2.putText(image, "Movement Detected", (x, y - 10), cv2.FONT_HERSHEY_DUPLEX, 0.9, (0, 0, 255), 1)
             self.frame_buffer.append(image.copy())  # Ensure frame is added here
             self.running_buffer.append(image.copy())
-            self.send_email.log_event("Movement detected")
+
             # Attempt to send email snapshot
             if time.time() - self.last_alert_time >= self.alert_interval:
-                self.send_email.frame_buffer = self.frame_buffer  # Ensure SendEmail class has access to frame_buffer
-                self.send_email.send_email_snapshot()
+                self.send_email.log_event("Movement detected")
+                self.send_email.frame_buffer = self.frame_buffer.copy()
+                self.email_executor.submit(self.send_email.send_email_snapshot)  # Send email asynchronously
+                print("Email sent from VC class")
                 self.last_alert_time = time.time()
 
         detected_faces = []
@@ -143,11 +155,11 @@ class VideoCamera:
 
             audio_filename = f"audio_{timestamp}.wav"
             audio_file_path = os.path.join(event_clips_dir, audio_filename)
-            self.save_audio.save_audio_clip(audio_file_path)
+            # self.save_audio.save_audio_clip(audio_file_path)
 
             final_filename = f"final_event_{timestamp}.mp4"
             final_file_path = os.path.join(event_clips_dir, final_filename)
-            self.save_audio.combine_audio_video(video_file_path, audio_file_path, final_file_path)
+            # self.save_audio.combine_audio_video(video_file_path, audio_file_path, final_file_path)
 
             event = Event(event_type='Periodic', description='Periodic buffer save', clip=f'event_clips/{final_filename}')
             event.save()

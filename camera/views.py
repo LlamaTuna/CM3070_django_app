@@ -1,5 +1,6 @@
+#view.py
 import threading
-from django.http import StreamingHttpResponse, JsonResponse
+from django.http import StreamingHttpResponse, JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -24,9 +25,16 @@ import logging
 from .video_camera import VideoCamera
 from .forms import EmailSettingsForm, UserSettingsForm
 from .models import EmailSettings
+from urllib.parse import unquote
+from django.core.cache import cache
+
+
+import sys
+
+camera_instances = []
+
 
 # Check if the script is running a management command
-import sys
 is_management_command = len(sys.argv) > 1 and sys.argv[1] in ['makemigrations', 'migrate', 'createsuperuser', 'collectstatic']
 
 if not is_management_command:
@@ -42,6 +50,20 @@ logs = []
 
 # Global variable to hold the camera instance
 camera_instance = None
+
+def list_cameras():
+    """
+    Lists available camera devices and their paths.
+    """
+    camera_devices = []
+    for filename in os.listdir('/dev'):
+        if filename.startswith('video'):
+            device_path = os.path.join('/dev', filename)
+            camera_devices.append(device_path)
+    print("Camera devices:", camera_devices)
+    return camera_devices
+
+list_cameras()
 
 def log_event(event):
     """
@@ -73,18 +95,41 @@ def get_logs(request):
     print("Fetching logs:", log_data)  # Debug statement
     return JsonResponse({'logs': log_data})
 
-def initialize_camera(request):
-    global camera_instance
-    if camera_instance is None:
-        camera_instance = VideoCamera(request=request)
-        if camera_instance.video is None:
-            camera_instance = None
-            print("Failed to initialize camera.")
-        else:
-            print("Camera initialized successfully.")
+from django.core.cache import cache
 
+def initialize_camera(request, device_path):
+    global camera_instances
+    normalized_device_path = f"/dev/{device_path.split('/')[-1]}"
+
+    cached_camera = cache.get(f'camera_{normalized_device_path}')
+    if cached_camera:
+        print(f"Camera at {normalized_device_path} loaded from cache.")
+        return cached_camera
+
+    # Create new camera instance if not found in cache
+    camera = VideoCamera(camera_index=normalized_device_path, request=request)
+    if camera.video is None or not camera.video.isOpened():
+        cache.delete(f'camera_{normalized_device_path}')
+        return None
+
+    camera_instances.append(camera)
+    cache.set(f'camera_{normalized_device_path}', camera)
+    print(f"Camera at {normalized_device_path} initialized successfully.")
+    return camera
+
+
+    
 # Initialize the camera processing
 # Remove the threading context here as request argument is not available in this context
+
+def initialize_all_cameras(request):
+    """
+    Initializes VideoCamera instances for all available cameras.
+    """
+    global camera_instances
+    camera_devices = list_cameras()
+    for device_path in camera_devices:
+        initialize_camera(request, device_path)
 
 def gen(camera):
     """
@@ -102,24 +147,53 @@ def gen(camera):
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
-def video_feed(request):
-    global camera_instance
-    if camera_instance is None:
-        initialize_camera(request)
-    return StreamingHttpResponse(gen(camera_instance),
+
+
+def video_feed(request, device_path):
+    global camera_instances
+
+    # Normalize device path (remove leading/trailing slashes)
+    normalized_device_path = f"/dev/{device_path.split('/')[-1]}"
+
+    # Check if camera instance for this device path already exists
+    for camera in camera_instances:
+        if camera.device_path == normalized_device_path:
+            print(f"Reusing existing camera instance for {normalized_device_path}")
+            return StreamingHttpResponse(gen(camera),
+                                         content_type='multipart/x-mixed-replace; boundary=frame')
+
+    # If not found, create and cache a new camera instance
+    print(f"Creating new camera instance for {normalized_device_path}")
+    camera = VideoCamera(camera_index=normalized_device_path, request=request)
+    if camera.video is None or not camera.video.isOpened():
+        return HttpResponse("Camera not found", status=404)
+
+    camera.device_path = normalized_device_path
+    camera_instances.append(camera)
+
+    return StreamingHttpResponse(gen(camera),
                                  content_type='multipart/x-mixed-replace; boundary=frame')
+
+
+
 
 def index(request):
     """
-    Renders the index page.
-
-    Args:
-        request (HttpRequest): The HTTP request object.
-
-    Returns:
-        HttpResponse: The rendered index page.
+    Renders the index page with available camera device paths.
     """
-    return render(request, 'camera/index.html')
+    camera_devices = list_cameras()
+    return render(request, 'camera/index.html', {'camera_devices': camera_devices})
+
+def camera_view(request, device_path):
+    """
+    Handles the camera view for the specified device path.
+    """
+    # Initialize all cameras if not already done (you might want to optimize this)
+    if not camera_instances:
+        initialize_all_cameras(request)
+
+    # Render the camera view template
+    return render(request, 'camera_view.html', {'device_path': device_path})
 
 @login_required
 def list_faces(request):
