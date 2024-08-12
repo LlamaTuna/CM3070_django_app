@@ -101,22 +101,21 @@ def initialize_camera(request, device_path):
     global camera_instances
     normalized_device_path = f"/dev/{device_path.split('/')[-1]}"
 
-    cached_camera = cache.get(f'camera_{normalized_device_path}')
-    if cached_camera:
-        print(f"Camera at {normalized_device_path} loaded from cache.")
-        return cached_camera
+    # Check if the camera is already initialized
+    for camera in camera_instances:
+        if camera.camera_index == normalized_device_path:
+            print(f"Camera at {normalized_device_path} is already initialized.")
+            return camera
 
-    # Create new camera instance if not found in cache
+    # Create new camera instance if not found in initialized list
     camera = VideoCamera(camera_index=normalized_device_path, request=request)
     if camera.video is None or not camera.video.isOpened():
-        cache.delete(f'camera_{normalized_device_path}')
+        print(f"Failed to open camera at {normalized_device_path}.")
         return None
 
     camera_instances.append(camera)
-    cache.set(f'camera_{normalized_device_path}', camera)
     print(f"Camera at {normalized_device_path} initialized successfully.")
     return camera
-
 
     
 # Initialize the camera processing
@@ -157,7 +156,7 @@ def video_feed(request, device_path):
 
     # Check if camera instance for this device path already exists
     for camera in camera_instances:
-        if camera.device_path == normalized_device_path:
+        if camera.camera_index == normalized_device_path:  # Use camera_index instead of device_path
             print(f"Reusing existing camera instance for {normalized_device_path}")
             return StreamingHttpResponse(gen(camera),
                                          content_type='multipart/x-mixed-replace; boundary=frame')
@@ -168,7 +167,6 @@ def video_feed(request, device_path):
     if camera.video is None or not camera.video.isOpened():
         return HttpResponse("Camera not found", status=404)
 
-    camera.device_path = normalized_device_path
     camera_instances.append(camera)
 
     return StreamingHttpResponse(gen(camera),
@@ -182,7 +180,15 @@ def index(request):
     Renders the index page with available camera device paths.
     """
     camera_devices = list_cameras()
-    return render(request, 'camera/index.html', {'camera_devices': camera_devices})
+    initialized_cameras = []
+
+    for device_path in camera_devices:
+        camera = initialize_camera(request, device_path)
+        if camera:  # Only add if initialization was successful
+            initialized_cameras.append(device_path)
+
+    return render(request, 'camera/index.html', {'camera_devices': initialized_cameras})
+
 
 def camera_view(request, device_path):
     """
@@ -364,3 +370,17 @@ def user_settings(request):
     else:
         form = UserSettingsForm(instance=request.user)
     return render(request, 'camera/user_settings.html', {'form': form})
+
+@login_required
+def delete_all_faces(request):
+    """
+    Deletes all face records and their associated image files.
+    """
+    faces = Face.objects.all()
+    for face in faces:
+        if face.image:
+            if os.path.isfile(face.image.path):
+                os.remove(face.image.path)  # Delete the image file from the filesystem
+        face.delete()  # Delete the database record
+    
+    return redirect('list_faces')

@@ -5,6 +5,11 @@
 
 {% block content %}
     <h1>Face Gallery</h1>
+
+    <form method="POST" action="{% url 'delete_all_faces' %}" onsubmit="return confirm('Are you sure you want to delete all images? This action cannot be undone.');">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete All Images</button>
+    </form>
     <div class="gallery">
         {% for face in faces %}
         <div class="gallery-item">

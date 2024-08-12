@@ -12,16 +12,19 @@ import pytz
 import os
 from django.conf import settings
 from .models import Event
+import subprocess
 
 class VideoCamera:
     def __init__(self, camera_index=0, resolution=(320, 240), request=None):
+        self.camera_index = camera_index
         self.video = cv2.VideoCapture(camera_index)
         if not self.video.isOpened():
             print(f"Error: Could not open video device at {camera_index}.")
             self.video = None
-            # self.save_audio = None  # Initialize save_audio even if the video fails
+            self.initialized = False  # Camera failed to open
             return
 
+        self.initialized = True  # Camera successfully opened
         self.video.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
         self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
 
@@ -146,24 +149,53 @@ class VideoCamera:
             video_filename = f"event_{timestamp}.mp4"
             video_file_path = os.path.join(event_clips_dir, video_filename)
 
-            fps = 20
-            out = cv2.VideoWriter(video_file_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (320, 240))
+            # Adjust frame rate and duration (if needed)
+            fps = 6
+            duration_seconds = 30  # Length of the snippet in seconds
+            expected_frame_count = fps * duration_seconds
 
-            for frame in self.running_buffer:
-                out.write(frame)
-            out.release()
+            # Use FFmpeg to record both video and audio
+            command = [
+                'ffmpeg',
+                '-y',  # Overwrite output files without asking
+                '-f', 'rawvideo',  # Format of the input video data
+                '-pix_fmt', 'bgr24',  # Pixel format of the input data
+                '-s', '320x240',  # Frame size: width x height
+                '-r', str(fps),  # Frame rate
+                '-i', '-',  # Input comes from a pipe
+                '-f', 'pulse',  # Use PulseAudio
+                '-i', 'default',  # Default PulseAudio source
+                '-c:v', 'libx264',  # Video codec
+                '-preset', 'fast',  # FFmpeg preset
+                '-c:a', 'aac',  # Audio codec
+                '-b:a', '128k',  # Audio bitrate
+                '-pix_fmt', 'yuv420p',  # Pixel format for output video
+                '-t', str(duration_seconds),  # Set the duration of the output file
+                video_file_path
+            ]
 
-            audio_filename = f"audio_{timestamp}.wav"
-            audio_file_path = os.path.join(event_clips_dir, audio_filename)
-            # self.save_audio.save_audio_clip(audio_file_path)
+            # Start FFmpeg process
+            process = subprocess.Popen(command, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 
-            final_filename = f"final_event_{timestamp}.mp4"
-            final_file_path = os.path.join(event_clips_dir, final_filename)
-            # self.save_audio.combine_audio_video(video_file_path, audio_file_path, final_file_path)
+            try:
+                for i in range(min(expected_frame_count, len(self.running_buffer))):
+                    frame = self.running_buffer[i]
+                    process.stdin.write(frame.tobytes())
+            except Exception as e:
+                print(f"Error writing frame to FFmpeg process: {e}")
 
-            event = Event(event_type='Periodic', description='Periodic buffer save', clip=f'event_clips/{final_filename}')
+            process.stdin.close()
+            process.wait()
+
+            if process.returncode != 0:
+                error_output = process.stderr.read().decode()
+                print(f"FFmpeg error: {error_output}")
+
+            # Save event in the database
+            event = Event(event_type='Periodic', description='Periodic buffer save', clip=f'event_clips/{video_filename}')
             event.save()
 
+            # Clear the buffer after saving the clip
             self.running_buffer = []
             self.save_timer = threading.Timer(60, self.save_running_buffer_clip)
             self.save_timer.start()
