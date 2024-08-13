@@ -16,6 +16,8 @@ RUN apt-get update && apt-get install -y \
     v4l-utils \
     && rm -rf /var/lib/apt/lists/*
 
+# Install TensorFlow
+RUN pip install --no-cache-dir tensorflow tensorflow-hub
 
 # Set the working directory
 WORKDIR /app
@@ -25,6 +27,10 @@ ADD . /app
 
 # Copy the dlib shape predictor model file to the appropriate directory
 COPY camera/models/shape_predictor_68_face_landmarks.dat /app/camera/models/
+
+# Add MobileNetV3 model files to the appropriate directory
+COPY camera/models/mobilenet/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt /app/camera/models/mobilenet/
+COPY camera/models/mobilenet/frozen_inference_graph.pb /app/camera/models/mobilenet/
 
 # Use a reliable PyPI mirror
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple

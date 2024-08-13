@@ -1,4 +1,3 @@
-#video_camera.py
 import threading
 import cv2
 import time
@@ -7,12 +6,12 @@ from datetime import datetime
 from .movement_detection import MovementDetection
 from .facial_recognition import FacialRecognition
 from .send_email import SendEmail
-from .save_audio import SaveAudio
 import pytz
 import os
 from django.conf import settings
 from .models import Event
 import subprocess
+from .object_classifier import ObjectClassifier
 
 class VideoCamera:
     def __init__(self, camera_index=0, resolution=(320, 240), request=None):
@@ -31,7 +30,10 @@ class VideoCamera:
         self.movement_detection = MovementDetection()
         self.facial_recognition = FacialRecognition()
         self.send_email = SendEmail(request)
-        # self.save_audio = SaveAudio()  
+
+        self.object_classifier = ObjectClassifier()  # Instantiate ObjectClassifier
+        self.classification_interval = 5  # Classify every 5 frames
+        self.classification_counter = 0
 
         self.frame_skip_interval = 2
         self.frame_count = 0
@@ -65,9 +67,7 @@ class VideoCamera:
             self.executor.shutdown(wait=False)
         if hasattr(self, 'email_executor'):  # Ensure the email executor is shut down properly
             self.email_executor.shutdown(wait=False)
-        # if self.save_audio and hasattr(self.save_audio, 'audio_stream') and self.save_audio.audio_stream:
-        #     self.save_audio.audio_stream.stop_stream()
-        #     self.save_audio.audio_stream.close()
+
 
     def get_frame(self):
         if not self.video:
@@ -91,6 +91,14 @@ class VideoCamera:
             cv2.putText(image, "Movement Detected", (x, y - 10), cv2.FONT_HERSHEY_DUPLEX, 0.9, (0, 0, 255), 1)
             self.frame_buffer.append(image.copy())  # Ensure frame is added here
             self.running_buffer.append(image.copy())
+
+            # Only classify objects if movement is detected
+            self.classification_counter += 1
+            if self.classification_counter >= self.classification_interval:
+                object_label = self.object_classifier.classify_object(image)  # Use ObjectClassifier
+                self.classification_counter = 0
+                cv2.putText(image, object_label, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 0), 2)
+                print(f"Object classified as: {object_label}")
 
             # Attempt to send email snapshot
             if time.time() - self.last_alert_time >= self.alert_interval:
@@ -151,7 +159,7 @@ class VideoCamera:
 
             # Adjust frame rate and duration (if needed)
             fps = 6
-            duration_seconds = 30  # Length of the snippet in seconds
+            duration_seconds = 15  # Length of the snippet in seconds
             expected_frame_count = fps * duration_seconds
 
             # Use FFmpeg to record both video and audio
@@ -190,12 +198,21 @@ class VideoCamera:
             if process.returncode != 0:
                 error_output = process.stderr.read().decode()
                 print(f"FFmpeg error: {error_output}")
+            else:
+                # Ensure the file is fully written and closed before sending
+                print(f"Video file {video_file_path} written successfully")
 
-            # Save event in the database
-            event = Event(event_type='Periodic', description='Periodic buffer save', clip=f'event_clips/{video_filename}')
-            event.save()
+                # Save event in the database
+                event = Event(event_type='Periodic', description='Periodic buffer save', clip=f'event_clips/{video_filename}')
+                event.save()
+
+                # Pass the video file path to the SendEmail instance
+                self.send_email.set_video_file_path(video_file_path)
+                self.email_executor.submit(self.send_email.send_email_snapshot)  # Ensure email is sent asynchronously
 
             # Clear the buffer after saving the clip
             self.running_buffer = []
-            self.save_timer = threading.Timer(60, self.save_running_buffer_clip)
-            self.save_timer.start()
+
+        # Restart the timer to repeat the process
+        self.save_timer = threading.Timer(60, self.save_running_buffer_clip)
+        self.save_timer.start()

@@ -2,16 +2,20 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
+from email.mime.base import MIMEBase
+from email import encoders
 import cv2
 from datetime import datetime
 from .models import EmailSettings
+import os
 
 class SendEmail:
     def __init__(self, request):
         self.request = request
         self.alert_buffer = []
         self.frame_buffer = []
-        self.detected_faces = []  # Add this attribute
+        self.detected_faces = []
+        self.video_file_path = None  # Add this attribute to hold the video file path
 
     def log_event(self, event):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -19,8 +23,11 @@ class SendEmail:
         self.alert_buffer.append(log_entry)
         print("SendEmail logged event:", log_entry)
 
-    def set_detected_faces(self, faces):  # Add this method
+    def set_detected_faces(self, faces):
         self.detected_faces = faces
+
+    def set_video_file_path(self, file_path):
+        self.video_file_path = file_path  # Set the video file path
 
     def send_email_snapshot(self):
         print("Attempting to send email snapshot...")
@@ -65,6 +72,14 @@ class SendEmail:
                 image = MIMEImage(image_data, name=f"event_{i + 1}.jpg")
                 msg.attach(image)
 
+            if self.video_file_path:
+                with open(self.video_file_path, 'rb') as video_file:
+                    part = MIMEBase('application', 'octet-stream')
+                    part.set_payload(video_file.read())
+                    encoders.encode_base64(part)
+                    part.add_header('Content-Disposition', f'attachment; filename={os.path.basename(self.video_file_path)}')
+                    msg.attach(part)
+
             print("Connecting to SMTP server...")
             server = smtplib.SMTP(smtp_server, smtp_port)
             server.starttls()
@@ -77,6 +92,7 @@ class SendEmail:
 
             self.alert_buffer = []
             self.frame_buffer = []
+            self.video_file_path = None  # Reset the video file path after sending the email
             print("Email sent successfully")
         except Exception as e:
             print(f"Failed to send snapshot email: {str(e)}")

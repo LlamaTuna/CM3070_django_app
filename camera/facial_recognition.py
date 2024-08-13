@@ -53,7 +53,7 @@ class FacialRecognition:
         features = self.model.predict(img_array)
         return features.flatten()
 
-    def _detect_faces(self, img, confidence_threshold=0.95):
+    def _detect_faces(self, img, confidence_threshold=0.70):
         small_img = cv2.resize(img, (160, 120))
         faces = self.detector.detect_faces(small_img)
         for face in faces:
@@ -91,7 +91,7 @@ class FacialRecognition:
                 if face_features is not None:
                     self.known_faces_features.append(face_features)
                     self.known_faces_labels.append(label)
-                    #print(f"Loaded known face: {label} with features: {face_features}")
+                    print(f"Loaded known face: {label} with features: {face_features}")
                 else:
                     print(f"Failed to extract features for known face: {label}")
 
@@ -107,7 +107,7 @@ class FacialRecognition:
             return features
         return None
 
-    def recognize_faces(self, frame, recognition_threshold=5.0):
+    def recognize_faces(self, frame, recognition_threshold = 7):
         gray_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         gray_image_3ch = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
         faces = self._detect_faces(gray_image_3ch)
@@ -123,14 +123,14 @@ class FacialRecognition:
             features = self._extract_features(face_array)
             min_distance = float('inf')
             label = 'Unknown'
-            #print(f"Extracted features for detected face: {features}")
+            print(f"Extracted features for detected face: {features}")
             for known_features, known_label in zip(self.known_faces_features, self.known_faces_labels):
                 dist = distance.euclidean(features, known_features)
                 print(f"Distance to known face {known_label}: {dist}")
                 if dist < min_distance:
                     min_distance = dist
                     label = known_label
-            #print(f"Min distance: {min_distance}, Threshold: {recognition_threshold}")
+            print(f"Min distance: {min_distance}, Threshold: {recognition_threshold}")
             if min_distance > recognition_threshold:
                 label = 'Unknown'
             face['label'] = label
