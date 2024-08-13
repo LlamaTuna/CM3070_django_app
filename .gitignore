@@ -99,5 +99,5 @@ __pycache__/
 staticfiles/
 media/
 db.sqlite3
-
+models/yolo/*
 
