@@ -12,19 +12,6 @@ db.sqlite3
 *.sqlite3
 media
 
-# If your virtualenv is in a folder named 'venv':
-venv/
-.venv/
-env/
-ENV/
-.env
-.env.local
-.env.production
-.env.testing
-.env.development
-
-# If your virtualenv is in a folder named '.env'
-.env/
 
 # Unit test / coverage reports
 htmlcov/

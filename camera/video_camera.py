@@ -12,6 +12,7 @@ from django.conf import settings
 from .models import Event
 import subprocess
 from .object_classifier import ObjectClassifier
+from .dashboard_api_handler import DashboardAPIHandler
 
 class VideoCamera:
     def __init__(self, camera_index=0, resolution=(320, 240), request=None):
@@ -30,6 +31,8 @@ class VideoCamera:
         self.movement_detection = MovementDetection()
         self.facial_recognition = FacialRecognition()
         self.send_email = SendEmail(request)
+
+        self.dashboard_api = DashboardAPIHandler(settings.DASHBOARD_API_URL)
 
         self.object_classifier = ObjectClassifier()  # Instantiate ObjectClassifier
         self.classification_interval = 5  # Classify every 5 frames
@@ -93,12 +96,18 @@ class VideoCamera:
             self.running_buffer.append(image.copy())
 
             # Only classify objects if movement is detected
+            self.dashboard_api.send_log("movement", "Movement detected", extra_data={"movement_box": movement_box})
             self.classification_counter += 1
             if self.classification_counter >= self.classification_interval:
                 object_label = self.object_classifier.classify_object(image)  # Use ObjectClassifier
                 self.classification_counter = 0
                 cv2.putText(image, object_label, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 0), 2)
-                print(f"Object classified as: {object_label}")
+                print(f"{object_label} seen in the frame")
+
+                # Log the object classification event
+                self.dashboard_api.send_log("classification", f"{object_label} seen in the frame")
+
+                self.send_email.log_event(f"{object_label} seen in the frame")
 
             # Attempt to send email snapshot
             if time.time() - self.last_alert_time >= self.alert_interval:
@@ -129,6 +138,7 @@ class VideoCamera:
 
         ret, jpeg = cv2.imencode('.jpg', image)
         return jpeg.tobytes()
+
 
     def _process_frames(self):
         while True:
@@ -209,6 +219,7 @@ class VideoCamera:
                 # Pass the video file path to the SendEmail instance
                 self.send_email.set_video_file_path(video_file_path)
                 self.email_executor.submit(self.send_email.send_email_snapshot)  # Ensure email is sent asynchronously
+                self.dashboard_api.send_video(video_file_path, description="Periodic buffer save")
 
             # Clear the buffer after saving the clip
             self.running_buffer = []

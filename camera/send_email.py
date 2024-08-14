@@ -64,6 +64,16 @@ class SendEmail:
 
             msg.attach(MIMEText(body, 'plain'))
 
+            # Ensure at least two frames are available
+            if len(self.frame_buffer) < 2:
+                if len(self.frame_buffer) == 1:
+                    # Duplicate the single available frame
+                    self.frame_buffer.append(self.frame_buffer[0])
+                elif len(self.frame_buffer) == 0:
+                    # Handle case with no frames (this should be rare)
+                    print("No frames available in frame_buffer, cannot attach images to email.")
+                    return
+
             selected_frames = self.select_representative_frames(self.frame_buffer, 2)
 
             for i, frame in enumerate(selected_frames):

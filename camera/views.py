@@ -27,6 +27,10 @@ from .forms import EmailSettingsForm, UserSettingsForm
 from .models import EmailSettings
 from urllib.parse import unquote
 from django.core.cache import cache
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import LogSerializer
 
 
 import sys
@@ -384,3 +388,11 @@ def delete_all_faces(request):
         face.delete()  # Delete the database record
     
     return redirect('list_faces')
+
+@api_view(['POST'])
+def log_event(request):
+    serializer = LogSerializer(data=request.data)
+    if serializer.is_valid():
+        # Here you would typically save the log to the database
+        return Response({"message": "Log received"}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
