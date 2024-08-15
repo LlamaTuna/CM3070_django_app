@@ -157,6 +157,12 @@ class VideoCamera:
                 self.send_email.set_detected_faces(recognized_faces)  # Pass detected faces to SendEmail
                 self.face_recognition_counter = 0
 
+                # Send face recognition log with face names
+                for face in recognized_faces:
+                    face_name = face.get('label', 'Unknown')
+                    self.dashboard_api.send_log("face_recognition", f"Detected face: {face_name}", extra_data={"face_name": face_name})
+
+
     def save_running_buffer_clip(self):
         if self.running_buffer:
             event_clips_dir = os.path.join(settings.MEDIA_ROOT, 'event_clips')
