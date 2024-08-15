@@ -14,6 +14,8 @@ import subprocess
 from .object_classifier import ObjectClassifier
 from .dashboard_api_handler import DashboardAPIHandler
 
+
+
 class VideoCamera:
     def __init__(self, camera_index=0, resolution=(320, 240), request=None):
         self.camera_index = camera_index
@@ -166,15 +168,19 @@ class VideoCamera:
     def save_running_buffer_clip(self):
         if self.running_buffer:
             event_clips_dir = os.path.join(settings.MEDIA_ROOT, 'event_clips')
+            thumbnails_dir = os.path.join(settings.MEDIA_ROOT, 'thumbnails')
+            
             if not os.path.exists(event_clips_dir):
                 os.makedirs(event_clips_dir)
+            if not os.path.exists(thumbnails_dir):
+                os.makedirs(thumbnails_dir)
 
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             video_filename = f"event_{timestamp}.mp4"
             video_file_path = os.path.join(event_clips_dir, video_filename)
 
             # Adjust frame rate and duration (if needed)
-            fps = 6
+            fps = 7
             duration_seconds = 15  # Length of the snippet in seconds
             expected_frame_count = fps * duration_seconds
 
@@ -218,14 +224,21 @@ class VideoCamera:
                 # Ensure the file is fully written and closed before sending
                 print(f"Video file {video_file_path} written successfully")
 
-                # Save event in the database
-                event = Event(event_type='Periodic', description='Periodic buffer save', clip=f'event_clips/{video_filename}')
+                # Generate a thumbnail from the video
+                thumbnail_filename = f"thumb_{timestamp}.jpg"
+                thumbnail_path = os.path.join(thumbnails_dir, thumbnail_filename)
+                self.generate_thumbnail(video_file_path, thumbnail_path)
+                print(f"Thumbnail generated: {thumbnail_path}")
+
+                # Save event in the database with thumbnail
+                event = Event(event_type='Periodic', description='Periodic buffer save', clip=f'event_clips/{video_filename}', thumbnail=f'thumbnails/{thumbnail_filename}')
                 event.save()
 
                 # Pass the video file path to the SendEmail instance
                 self.send_email.set_video_file_path(video_file_path)
                 self.email_executor.submit(self.send_email.send_email_snapshot)  # Ensure email is sent asynchronously
-                self.dashboard_api.send_video(video_file_path, description="Periodic buffer save")
+                self.dashboard_api.send_video(video_file_path, description="Periodic buffer save", thumbnail_path=f'thumbnails/{thumbnail_filename}')
+
 
             # Clear the buffer after saving the clip
             self.running_buffer = []
@@ -233,3 +246,14 @@ class VideoCamera:
         # Restart the timer to repeat the process
         self.save_timer = threading.Timer(60, self.save_running_buffer_clip)
         self.save_timer.start()
+
+    def generate_thumbnail(self, video_path, thumbnail_path, time="00:00:05"):
+        command = [
+            'ffmpeg',
+            '-ss', time,  # Time to capture the thumbnail (e.g., 5 seconds into the video)
+            '-i', video_path,  # Input video file
+            '-vframes', '1',  # Capture just one frame
+            '-q:v', '2',  # Output quality level (lower is better quality)
+            thumbnail_path  # Output thumbnail file path
+        ]
+        subprocess.run(command, check=True)

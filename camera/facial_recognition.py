@@ -22,10 +22,10 @@ class FacialRecognition:
         # Load the shape predictor
         shape_predictor_path = os.path.join(settings.MODEL_DIR, 'shape_predictor_68_face_landmarks.dat')
         if os.path.exists(shape_predictor_path):
-            print(f"Loading shape predictor from: {shape_predictor_path}")
+            # print(f"Loading shape predictor from: {shape_predictor_path}")
             self.shape_predictor = dlib.shape_predictor(shape_predictor_path)
         else:
-            print(f"Shape predictor file not found at: {shape_predictor_path}")
+            # print(f"Shape predictor file not found at: {shape_predictor_path}")
             self.shape_predictor = None
         
         self.load_known_faces()
@@ -91,7 +91,7 @@ class FacialRecognition:
                 if face_features is not None:
                     self.known_faces_features.append(face_features)
                     self.known_faces_labels.append(label)
-                    print(f"Loaded known face: {label} with features: {face_features}")
+                    # print(f"Loaded known face: {label} with features: {face_features}")
                 else:
                     print(f"Failed to extract features for known face: {label}")
 
@@ -123,14 +123,14 @@ class FacialRecognition:
             features = self._extract_features(face_array)
             min_distance = float('inf')
             label = 'Unknown'
-            print(f"Extracted features for detected face: {features}")
+            # print(f"Extracted features for detected face: {features}")
             for known_features, known_label in zip(self.known_faces_features, self.known_faces_labels):
                 dist = distance.euclidean(features, known_features)
                 print(f"Distance to known face {known_label}: {dist}")
                 if dist < min_distance:
                     min_distance = dist
                     label = known_label
-            print(f"Min distance: {min_distance}, Threshold: {recognition_threshold}")
+            # print(f"Min distance: {min_distance}, Threshold: {recognition_threshold}")
             if min_distance > recognition_threshold:
                 label = 'Unknown'
             face['label'] = label

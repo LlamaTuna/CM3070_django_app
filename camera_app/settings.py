@@ -133,3 +133,6 @@ LOGOUT_REDIRECT_URL = 'index'
 # settings.py
 
 DASHBOARD_API_URL = 'http://127.0.0.1:8001/api'  # Replace with the actual URL of your dashboard API
+
+TIME_ZONE = 'America/Los_Angeles'
+USE_TZ = True 

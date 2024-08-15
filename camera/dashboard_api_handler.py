@@ -3,13 +3,6 @@ from datetime import datetime
 import os
 import cv2
 from django.conf import settings
-from rest_framework import serializers
-
-class LogSerializer(serializers.Serializer):
-    timestamp = serializers.DateTimeField()
-    event_type = serializers.CharField(max_length=100)
-    description = serializers.CharField(max_length=255)
-    extra_data = serializers.JSONField(required=False)
 
 class DashboardAPIHandler:
     def __init__(self, api_url):
@@ -27,7 +20,7 @@ class DashboardAPIHandler:
         try:
             response = requests.post(f"{self.api_url}/log_event/", json=payload)
             response.raise_for_status()
-            print("Log sent successfully")
+            # print("Log sent successfully")
         except requests.exceptions.RequestException as e:
             print(f"Failed to send log: {e}")
 
@@ -45,16 +38,22 @@ class DashboardAPIHandler:
         except requests.exceptions.RequestException as e:
             print(f"Failed to send image: {e}")
 
-    def send_video(self, video_path, description="Video snippet uploaded"):
+    def send_video(self, video_path, description="Video snippet uploaded", thumbnail_path=None):
         with open(video_path, 'rb') as video_file:
             files = {'video': (os.path.basename(video_path), video_file, 'video/mp4')}
             data = {
                 'timestamp': datetime.now().isoformat(),
-                'description': description
+                'description': description,
+                'extra_data': {}
             }
+            
+            if thumbnail_path:
+                data['extra_data']['thumbnail'] = thumbnail_path
+                print(f"Sending thumbnail: {thumbnail_path}")  # Log the thumbnail path
+
             try:
                 response = requests.post(f"{self.api_url}/upload_video/", files=files, data=data)
                 response.raise_for_status()
-                print("Video sent successfully")
+                print("Video sent successfully with thumbnail")
             except requests.exceptions.RequestException as e:
                 print(f"Failed to send video: {e}")
