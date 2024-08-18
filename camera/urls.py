@@ -2,7 +2,7 @@
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from . import views
-from .views import log_event
+from .views import log_event, device_settings
 
 urlpatterns = [
     path('admin/', views.admin_view, name='admin_view'),
@@ -20,6 +20,7 @@ urlpatterns = [
     path('user_settings/', views.user_settings, name='user_settings'),  
     path('delete_all_faces/', views.delete_all_faces, name='delete_all_faces'),
     path('api/log_event/', log_event, name='log_event'),
+    path('device-settings/', device_settings, name='device_settings'),
 
 ]
 

@@ -1,7 +1,8 @@
 from django import forms
 from .models import Face
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import CustomUser, EmailSettings,User
+from .models import CustomUser, EmailSettings, User, AudioDeviceSetting
+import sounddevice as sd
 
 class CustomUserCreationForm(UserCreationForm):
     """
@@ -62,3 +63,17 @@ class UserSettingsForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
+
+class AudioDeviceSettingForm(forms.ModelForm):
+    camera_index = forms.CharField(widget=forms.HiddenInput())
+
+    def __init__(self, *args, **kwargs):
+        super(AudioDeviceSettingForm, self).__init__(*args, **kwargs)
+        devices = sd.query_devices()
+        input_devices = [(str(index), device['name']) for index, device in enumerate(devices) if device['max_input_channels'] > 0]
+        print("Form input devices:", input_devices)
+        self.fields['audio_device'] = forms.ChoiceField(choices=input_devices)
+
+    class Meta:
+        model = AudioDeviceSetting
+        fields = ['camera_index', 'audio_device']

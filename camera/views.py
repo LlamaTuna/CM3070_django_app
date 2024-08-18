@@ -31,6 +31,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import LogSerializer
+from .forms import AudioDeviceSettingForm
+from .models import AudioDeviceSetting
+
 
 
 import sys
@@ -393,6 +396,35 @@ def delete_all_faces(request):
 def log_event(request):
     serializer = LogSerializer(data=request.data)
     if serializer.is_valid():
-        # Here you would typically save the log to the database
+
         return Response({"message": "Log received"}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@login_required
+def device_settings(request):
+    available_devices = list_cameras()  # This gets the available camera devices
+
+    # If no camera devices are found, you might want to handle this case
+    if not available_devices:
+        return render(request, 'camera/device_settings.html', {'error': 'No camera devices found.'})
+
+    # Automatically select the first available camera device
+    selected_device = available_devices[0]  # Select the first camera device as a default
+
+    if request.method == 'POST':
+        form = AudioDeviceSettingForm(request.POST)
+        if form.is_valid():
+            setting = form.save(commit=False)
+            setting.user = request.user
+            setting.camera_index = selected_device  # Automatically set the camera_index based on available devices
+            setting.save()
+            print("ATTN! Audio device setting saved:", selected_device + " - " + setting.audio_device)  # Debug statement
+            return redirect('device_settings')
+    else:
+        form = AudioDeviceSettingForm(initial={'camera_index': selected_device})
+
+    return render(request, 'camera/device_settings.html', {'form': form})
+
+
+

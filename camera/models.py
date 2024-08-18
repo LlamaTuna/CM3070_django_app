@@ -59,3 +59,12 @@ class EmailSettings(models.Model):
     smtp_port = models.IntegerField()
     smtp_user = models.CharField(max_length=100)
     smtp_password = models.CharField(max_length=100)
+
+class AudioDeviceSetting(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    device_path = models.CharField(max_length=255)  # Use device path instead of index
+    audio_device = models.CharField(max_length=255, default='default')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.device_path} - {self.audio_device}"
+

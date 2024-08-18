@@ -9,10 +9,11 @@ from .send_email import SendEmail
 import pytz
 import os
 from django.conf import settings
-from .models import Event
+from .models import Event, AudioDeviceSetting
 import subprocess
 from .object_classifier import ObjectClassifier
 from .dashboard_api_handler import DashboardAPIHandler
+from .pulse_audio_manager import PulseAudioManager
 
 
 
@@ -25,6 +26,18 @@ class VideoCamera:
             self.video = None
             self.initialized = False  # Camera failed to open
             return
+        
+        # Initialize PulseAudioManager
+        self.pulse_manager = PulseAudioManager()
+        
+        self.audio_device = 'default'  # Fallback to default device
+        if request and request.user.is_authenticated:
+            try:
+                setting = AudioDeviceSetting.objects.get(user=request.user, device_path=camera_index)
+                self.pulse_manager.select_audio_source(setting.audio_device)
+                self.audio_device = self.pulse_manager.get_selected_source()
+            except AudioDeviceSetting.DoesNotExist:
+                pass
 
         self.initialized = True  # Camera successfully opened
         self.video.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
@@ -72,6 +85,8 @@ class VideoCamera:
             self.executor.shutdown(wait=False)
         if hasattr(self, 'email_executor'):  # Ensure the email executor is shut down properly
             self.email_executor.shutdown(wait=False)
+        if self.pulse_manager:
+            self.pulse_manager.close()
 
 
     def get_frame(self):
@@ -164,12 +179,20 @@ class VideoCamera:
                     face_name = face.get('label', 'Unknown')
                     self.dashboard_api.send_log("face_recognition", f"Detected face: {face_name}", extra_data={"face_name": face_name})
 
-
+    def get_user_audio_device(self):
+        if self.request and self.request.user.is_authenticated:
+            try:
+                device_setting = AudioDeviceSetting.objects.get(user=self.request.user)
+                return device_setting.audio_device_name
+            except AudioDeviceSetting.DoesNotExist:
+                pass
+        return 'default'  # Fallback to default device
+    
     def save_running_buffer_clip(self):
         if self.running_buffer:
             event_clips_dir = os.path.join(settings.MEDIA_ROOT, 'event_clips')
             thumbnails_dir = os.path.join(settings.MEDIA_ROOT, 'thumbnails')
-            
+
             if not os.path.exists(event_clips_dir):
                 os.makedirs(event_clips_dir)
             if not os.path.exists(thumbnails_dir):
@@ -192,17 +215,21 @@ class VideoCamera:
                 '-pix_fmt', 'bgr24',  # Pixel format of the input data
                 '-s', '320x240',  # Frame size: width x height
                 '-r', str(fps),  # Frame rate
-                '-i', '-',  # Input comes from a pipe
-                '-f', 'pulse',  # Use PulseAudio
-                '-i', 'default',  # Default PulseAudio source
+                '-i', '-',  # Input comes from a pipe (for video)
+                '-f', 'pulse',  # Use PulseAudio for capturing audio
+                '-i', f'{self.audio_device}',  # Use selected audio device
                 '-c:v', 'libx264',  # Video codec
                 '-preset', 'fast',  # FFmpeg preset
                 '-c:a', 'aac',  # Audio codec
+                '-ar', '48000',  # Audio sampling rate
                 '-b:a', '128k',  # Audio bitrate
                 '-pix_fmt', 'yuv420p',  # Pixel format for output video
+                '-vsync', 'vfr',  # Variable frame rate to sync with audio
+                '-async', '1',  # Adjust audio to match video
                 '-t', str(duration_seconds),  # Set the duration of the output file
                 video_file_path
             ]
+
 
             # Start FFmpeg process
             process = subprocess.Popen(command, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -238,7 +265,6 @@ class VideoCamera:
                 self.send_email.set_video_file_path(video_file_path)
                 self.email_executor.submit(self.send_email.send_email_snapshot)  # Ensure email is sent asynchronously
                 self.dashboard_api.send_video(video_file_path, description="Periodic buffer save", thumbnail_path=f'thumbnails/{thumbnail_filename}')
-
 
             # Clear the buffer after saving the clip
             self.running_buffer = []
