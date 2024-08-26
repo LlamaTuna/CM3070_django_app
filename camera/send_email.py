@@ -10,26 +10,60 @@ from .models import EmailSettings
 import os
 
 class SendEmail:
+    """
+    A class responsible for handling the sending of email notifications, including
+    attaching snapshots, detected faces, and video clips.
+    """
+
     def __init__(self, request):
+        """
+        Initializes the SendEmail class with the user's request, setting up buffers
+        for alerts, frames, and detected faces.
+
+        Args:
+            request: The Django request object containing the user information.
+        """
         self.request = request
         self.alert_buffer = []
         self.frame_buffer = []
         self.detected_faces = []
-        self.video_file_path = None  # Add this attribute to hold the video file path
+        self.video_file_path = None  # Attribute to hold the video file path
 
     def log_event(self, event):
+        """
+        Logs an event into the alert buffer with a timestamp.
+
+        Args:
+            event (str): The event description to be logged.
+        """
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         log_entry = f"[{timestamp}] {event}"
         self.alert_buffer.append(log_entry)
         print("SendEmail logged event:", log_entry)
 
     def set_detected_faces(self, faces):
+        """
+        Sets the list of detected faces to be included in the email.
+
+        Args:
+            faces (list): A list of detected faces with associated labels.
+        """
         self.detected_faces = faces
 
     def set_video_file_path(self, file_path):
-        self.video_file_path = file_path  # Set the video file path
+        """
+        Sets the path of the video file to be attached to the email.
+
+        Args:
+            file_path (str): The file path of the video to attach.
+        """
+        self.video_file_path = file_path
 
     def send_email_snapshot(self):
+        """
+        Sends an email with the logged events, detected faces, and optionally attached
+        snapshots and video clips. Handles all aspects of email composition and sending.
+        """
         print("Attempting to send email snapshot...")
         if not self.alert_buffer:
             print("Alert buffer is empty, no email will be sent.")
@@ -108,6 +142,16 @@ class SendEmail:
             print(f"Failed to send snapshot email: {str(e)}")
 
     def select_representative_frames(self, frames, num_frames):
+        """
+        Selects a specified number of representative frames from the buffer.
+
+        Args:
+            frames (list): A list of frames to select from.
+            num_frames (int): The number of frames to select.
+
+        Returns:
+            list: A list of selected representative frames.
+        """
         if len(frames) <= num_frames:
             return frames
         interval = len(frames) // num_frames

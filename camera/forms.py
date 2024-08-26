@@ -55,19 +55,34 @@ class UploadFaceForm(forms.ModelForm):
         fields = ['name', 'image']
 
 class EmailSettingsForm(forms.ModelForm):
+    """
+    A form for updating the email settings of a user, including SMTP server details.
+    """
     class Meta:
         model = EmailSettings
         fields = ['smtp_server', 'smtp_port', 'smtp_user', 'smtp_password', 'email']
 
 class UserSettingsForm(forms.ModelForm):
+    """
+    A form for updating user settings, such as first name, last name, and email.
+    """
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
 
 class AudioDeviceSettingForm(forms.ModelForm):
+    """
+    A form for configuring the audio device settings associated with a camera.
+    
+    Attributes:
+        camera_index (CharField): Hidden input field for storing the camera index.
+    """
     camera_index = forms.CharField(widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
+        """
+        Initializes the form and sets up the available audio devices as choices.
+        """
         super(AudioDeviceSettingForm, self).__init__(*args, **kwargs)
         devices = sd.query_devices()
         input_devices = [(str(index), device['name']) for index, device in enumerate(devices) if device['max_input_channels'] > 0]
