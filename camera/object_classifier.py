@@ -19,7 +19,7 @@ class ObjectClassifier:
         buffer_size (int): The size of the prediction buffer.
     """
 
-    def __init__(self, buffer_size=10, confidence_threshold=0.5):
+    def __init__(self, buffer_size=15, confidence_threshold=0.5):
         """
         Initializes the ObjectClassifier by loading the MobileNetV3 model and its configuration.
 
