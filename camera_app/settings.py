@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'camera.middleware.ProfilerMiddleware', 
 ]
 
 ROOT_URLCONF = 'camera_app.urls'
