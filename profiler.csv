@@ -1,0 +1,256 @@
+ncalls,tottime,percall,cumtime,percall,filename:lineno(function)
+1,0.000,0.000,0.002,0.002,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/core/handlers/exception.py:52(inner)
+1,0.000,0.000,0.002,0.002,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/core/handlers/base.py:174(_get_response)
+1,0.000,0.000,0.002,0.002,/home/vance_octane/Bsc/Level_6/cm3070/final/web_app_25-Docstrings/camera_app/camera/views.py:196(index)
+1,0.000,0.000,0.001,0.001,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/shortcuts.py:17(render)
+1,0.000,0.000,0.001,0.001,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loader.py:52(render_to_string)
+1,0.000,0.000,0.001,0.001,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/backends/django.py:56(render)
+1,0.000,0.000,0.001,0.001,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/base.py:169(render)
+2/1,0.000,0.000,0.001,0.001,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/base.py:166(_render)
+5/1,0.000,0.000,0.001,0.001,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/base.py:1004(render)
+5/1,0.000,0.000,0.001,0.001,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/base.py:1005()
+20/1,0.000,0.000,0.001,0.001,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/base.py:958(render_annotated)
+1,0.000,0.000,0.001,0.001,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loader_tags.py:131(render)
+8,0.000,0.000,0.001,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/defaulttags.py:454(render)
+2,0.000,0.000,0.001,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loader_tags.py:49(render)
+8,0.000,0.000,0.001,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/base.py:27(reverse)
+8,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:741(_reverse_with_prefix)
+136/83,0.000,0.000,0.000,0.000,{built-in method builtins.getattr}
+26,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/asgiref/local.py:116(__getattr__)
+4,0.000,0.000,0.000,0.000,/home/vance_octane/Bsc/Level_6/cm3070/final/web_app_25-Docstrings/camera_app/camera/views.py:104(initialize_camera)
+10,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/translation/__init__.py:209(get_language)
+10,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/translation/trans_real.py:325(get_language)
+8,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:615(reverse_dict)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/Bsc/Level_6/cm3070/final/web_app_25-Docstrings/camera_app/camera/video_camera.py:54(__init__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/Bsc/Level_6/cm3070/final/web_app_25-Docstrings/camera_app/camera/views.py:57(list_cameras)
+5,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/base.py:1062(render)
+5,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/base.py:1037(render_value_in_context)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/defaulttags.py:183(render)
+8,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/functional.py:264(inner)
+1,0.000,0.000,0.000,0.000,{built-in method posix.listdir}
+49/36,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/functional.py:291(__getattribute__)
+186,0.000,0.000,0.000,0.000,{built-in method builtins.isinstance}
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/functional.py:418(_setup)
+5,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/timezone.py:181(template_localtime)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/defaulttags.py:310(render)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context_processors.py:23(_get_val)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/middleware/csrf.py:101(get_token)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/middleware/csrf.py:58(_mask_cipher_secret)
+20,0.000,0.000,0.000,0.000,{method 'join' of 'str' objects}
+3,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/weakref.py:561(__call__)
+7,0.000,0.000,0.000,0.000,{built-in method builtins.print}
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/middleware/csrf.py:54(_get_new_csrf_string)
+3,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/urllib3/connectionpool.py:1174(_close_pool_connections)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/crypto.py:51(get_random_string)
+19,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/base.py:712(resolve)
+33,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/crypto.py:62()
+33,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/queue.py:153(get)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/templatetags/static.py:115(render)
+32,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/random.py:285(choice)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/templatetags/static.py:111(url)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/templatetags/static.py:124(handle_simple)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/core/handlers/base.py:300(resolve_request)
+32,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/random.py:250(_randbelow_with_getrandbits)
+9,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/base.py:843(resolve)
+4/1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:657(resolve)
+9,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/base.py:867(_resolve_lookup)
+14,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/html.py:82(conditional_escape)
+17,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/functional.py:239(wrapper)
+5,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/formats.py:199(localize)
+8,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/base.py:140(get_urlconf)
+32,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/random.py:721(getrandbits)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/defaulttags.py:876(eval)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/core/files/storage/filesystem.py:184(url)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/formats.py:175(number_format)
+29,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/contextlib.py:108(__enter__)
+48,0.000,0.000,0.000,0.000,{built-in method builtins.next}
+8,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/base.py:109(get_script_prefix)
+332,0.000,0.000,0.000,0.000,{method 'startswith' of 'str' objects}
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/urllib/parse.py:514(urljoin)
+3/1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/base.py:1007(get_nodes_by_type)
+29,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/contextlib.py:117(__exit__)
+29,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/contextlib.py:238(helper)
+32,0.000,0.000,0.000,0.000,{built-in method posix.urandom}
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/http/response.py:383(__init__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/contrib/auth/middleware.py:25()
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/contrib/auth/middleware.py:9(get_user)
+9,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/urllib/parse.py:809(quote)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loader.py:5(get_template)
+33,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/middleware/csrf.py:66()
+52,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/asgiref/local.py:81(_lock_storage)
+4,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/posixpath.py:71(join)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loaders/cached.py:28(get_template)
+8,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/datastructures.py:147(getlist)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loader_tags.py:96(find_template)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:424(resolve)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/urllib/parse.py:425(urlsplit)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/engine.py:170(get_template)
+3,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:34(__init__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/apps/registry.py:242(is_installed)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/http/response.py:412(content)
+12,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/html/__init__.py:12(escape)
+8,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/datastructures.py:129(_getlist)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/contrib/auth/__init__.py:165(get_user_model)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/http/response.py:154(charset)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/encoding.py:234(filepath_to_uri)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:195(match)
+33,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/threading.py:246(__enter__)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/numberformat.py:7(format)
+30,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/threading.py:261(_is_owned)
+34,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/functional.py:241()
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/http/response.py:305(make_bytes)
+5,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:48(push)
+8,0.000,0.000,0.000,0.000,:1017(_handle_fromlist)
+15,0.000,0.000,0.000,0.000,{method 'search' of 're.Pattern' objects}
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loaders/cached.py:72(cache_key)
+8,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/re.py:289(_compile)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loader.py:65(_engine_list)
+8,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/re.py:270(escape)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/conf/__init__.py:184(_USE_L10N_INTERNAL)
+58,0.000,0.000,0.000,0.000,{built-in method builtins.hasattr}
+33,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/threading.py:249(__exit__)
+30,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/queue.py:251(_get)
+33,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/queue.py:245(_qsize)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/apps/registry.py:188(get_model)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:136(__init__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/utils.py:93(all)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/core/handlers/base.py:317(check_response)
+7,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:14(__init__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/defaulttags.py:306(nodelist)
+82,0.000,0.000,0.000,0.000,{method 'replace' of 'str' objects}
+26,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/base.py:1027(render_annotated)
+5,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:306(match)
+64,0.000,0.000,0.000,0.000,{method 'index' of 'str' objects}
+108,0.000,0.000,0.000,0.000,{built-in method builtins.len}
+10,0.000,0.000,0.000,0.000,{method 'throw' of 'generator' objects}
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:162(update)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/asyncio/coroutines.py:177(iscoroutine)
+9,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:78(__getitem__)
+7,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/apps/registry.py:249()
+2,0.000,0.000,0.000,0.000,:1(__new__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context_processors.py:17(csrf)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/conf/__init__.py:99(__getattr__)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loader_tags.py:22(add_blocks)
+7,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/urllib/parse.py:113(_coerce_args)
+4,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:636(_extend_tried)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/defaultfilters.py:634(slice_filter)
+4,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:201(push_state)
+9,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:105(get_resolver)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/http/response.py:85(__setitem__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:98(setdefault)
+17,0.000,0.000,0.000,0.000,{method 'split' of 'str' objects}
+47,0.000,0.000,0.000,0.000,{method 'append' of 'list' objects}
+4,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/urllib/parse.py:420(_remove_unsafe_bytes_from_url)
+8,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/http.py:377(escape_leading_slashes)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/urllib/parse.py:484(urlunparse)
+30,0.000,0.000,0.000,0.000,{method 'acquire' of '_thread.lock' objects}
+33,0.000,0.000,0.000,0.000,{method '__enter__' of '_thread.lock' objects}
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/functional.py:406(__init__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/asyncio/coroutines.py:164(iscoroutinefunction)
+21,0.000,0.000,0.000,0.000,{method 'encode' of 'str' objects}
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/contrib/sessions/backends/base.py:52(__getitem__)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/Bsc/Level_6/cm3070/final/web_app_25-Docstrings/camera_app/camera/video_camera.py:121(__del__)
+3,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:23(__exit__)
+3,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/functional.py:304(__setattr__)
+5,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/safestring.py:58(mark_safe)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:28(__init__)
+8,0.000,0.000,0.000,0.000,{method 'translate' of 'str' objects}
+36,0.000,0.000,0.000,0.000,{method 'pop' of 'list' objects}
+13,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/defaulttags.py:302(__iter__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/abc.py:96(__instancecheck__)
+32,0.000,0.000,0.000,0.000,{built-in method from_bytes}
+8,0.000,0.000,0.000,0.000,{function MultiValueDict.__getitem__ at 0x7cba9982ef70}
+4,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:57(pop)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/inspect.py:189(iscoroutinefunction)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context_processors.py:36(debug)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/inspect.py:171(_has_code_flag)
+33,0.000,0.000,0.000,0.000,{method 'extend' of 'list' objects}
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:89(__contains__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/contrib/sessions/backends/base.py:180(_get_session)
+6,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/formats.py:100(get_format)
+26,0.000,0.000,0.000,0.000,{method 'get' of 'ContextVar' objects}
+4,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/posixpath.py:41(_get_sep)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/_collections_abc.py:664(__contains__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/utils.py:90(__iter__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/contrib/auth/context_processors.py:49(auth)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/apps/config.py:224(get_model)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/http/response.py:43(_convert_to_charset)
+28,0.000,0.000,0.000,0.000,{method 'items' of 'dict' objects}
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/middleware/csrf.py:419(process_view)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/utils.py:94()
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/core/handlers/base.py:345(make_view_atomic)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:31(_reset_dicts)
+9,0.000,0.000,0.000,0.000,{method 'get' of 'dict' objects}
+32,0.000,0.000,0.000,0.000,{method 'bit_length' of 'int' objects}
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/contrib/messages/context_processors.py:5(messages)
+9,0.000,0.000,0.000,0.000,{method 'rstrip' of 'bytes' objects}
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/_collections_abc.py:657(get)
+10,0.000,0.000,0.000,0.000,{built-in method sys.exc_info}
+3,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/datastructures.py:308(__getitem__)
+2,0.000,0.000,0.000,0.000,{method 'isOpened' of 'cv2.VideoCapture' objects}
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/urllib/parse.py:495(urlunsplit)
+7,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:62(__setitem__)
+7,0.000,0.000,0.000,0.000,{method 'update' of 'dict' objects}
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loader_tags.py:26(pop)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:198(__getitem__)
+33,0.000,0.000,0.000,0.000,{method '__exit__' of '_thread.lock' objects}
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/functional.py:286(__init__)
+9,0.000,0.000,0.000,0.000,{method 'decode' of 'bytes' objects}
+18,0.000,0.000,0.000,0.000,{method 'values' of 'dict' objects}
+1,0.000,0.000,0.000,0.000,{built-in method _abc._abc_instancecheck}
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:195(get)
+6,0.000,0.000,0.000,0.000,{method 'symmetric_difference' of 'set' objects}
+6,0.000,0.000,0.000,0.000,{method 'difference' of 'set' objects}
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loader_tags.py:15(__init__)
+3,0.000,0.000,0.000,0.000,{method 'pop' of 'dict' objects}
+15,0.000,0.000,0.000,0.000,{built-in method builtins.callable}
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loaders/cached.py:87()
+8,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/defaulttags.py:458()
+4,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:75(__getitem__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/apps/registry.py:150(get_app_config)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loader_tags.py:43(__init__)
+6,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:90()
+2,0.000,0.000,0.000,0.000,{built-in method __new__ of type object at 0x7cba9af4b980}
+4,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/apps/registry.py:129(check_apps_ready)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loader_tags.py:32(push)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/backends/django.py:48(__init__)
+4,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loaders/cached.py:93()
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/utils.py:67(__getitem__)
+1,0.000,0.000,0.000,0.000,:389(parent)
+4,0.000,0.000,0.000,0.000,{method 'endswith' of 'str' objects}
+1,0.000,0.000,0.000,0.000,{built-in method _operator.getitem}
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/loader_tags.py:147()
+5,0.000,0.000,0.000,0.000,{method 'lower' of 'str' objects}
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:337(__str__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:192(__contains__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/contrib/auth/context_processors.py:25(__init__)
+5,0.000,0.000,0.000,0.000,{method 'insert' of 'list' objects}
+7,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/urllib/parse.py:102(_noop)
+5,0.000,0.000,0.000,0.000,{built-in method builtins.issubclass}
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/contrib/messages/api.py:43(get_messages)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/http/response.py:33(__init__)
+3,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:641()
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/http/cookies.py:478(__init__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/inspect.py:80(ismethod)
+4,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/safestring.py:43(__str__)
+3,0.000,0.000,0.000,0.000,{method 'end' of 're.Match' objects}
+3,0.000,0.000,0.000,0.000,{method 'groupdict' of 're.Match' objects}
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:58()
+4,0.000,0.000,0.000,0.000,{built-in method posix.fspath}
+3,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context.py:20(__enter__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/inspect.py:158(isfunction)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/context_processors.py:88(request)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/middleware/csrf.py:207(_accept)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/converters.py:21(to_url)
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:643(_join_route)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/functools.py:429(_unwrap_partial)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:207()
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/contrib/auth/models.py:494(is_authenticated)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/template/defaulttags.py:378(render)
+1,0.000,0.000,0.000,0.000,{built-in method builtins.iter}
+1,0.000,0.000,0.000,0.000,{method 'lstrip' of 'str' objects}
+1,0.000,0.000,0.000,0.000,{method 'groups' of 're.Match' objects}
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/urls/resolvers.py:60()
+2,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/utils/safestring.py:16(__html__)
+1,0.000,0.000,0.000,0.000,/home/vance_octane/.pyenv/versions/3.8.12/lib/python3.8/site-packages/django/contrib/sessions/backends/base.py:165(_get_session_key)
+1,0.000,0.000,0.000,0.000,{method 'disable' of '_lsprof.Profiler' objects}

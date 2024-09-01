@@ -269,29 +269,30 @@ class VideoCamera:
             duration_seconds = 15  # Length of the snippet in seconds
             expected_frame_count = fps * duration_seconds
 
-            # Use FFmpeg to record both video and audio
+            # Use FFmpeg to record both video and audio into an MP4 container
             command = [
                 'ffmpeg',
                 '-y',  # Overwrite output files without asking
-                '-f', 'rawvideo',  # Format of the input video data
-                '-pix_fmt', 'bgr24',  # Pixel format of the input data
-                '-s', '320x240',  # Frame size: width x height
-                '-r', str(fps),  # Frame rate
+                '-f', 'rawvideo',
+                '-pix_fmt', 'bgr24',
+                '-s', '320x240',
+                '-r', str(fps),
                 '-i', '-',  # Input comes from a pipe (for video)
-                '-f', 'pulse',  # Use PulseAudio for capturing audio
-                '-i', f'{self.audio_device}',  # Use selected audio device
-                '-c:v', 'libx264',  # Video codec
-                '-preset', 'fast',  # FFmpeg preset
-                '-c:a', 'aac',  # Audio codec
-                '-ar', '48000',  # Audio sampling rate
-                '-b:a', '128k',  # Audio bitrate
-                '-pix_fmt', 'yuv420p',  # Pixel format for output video
-                '-vsync', 'vfr',  # Variable frame rate to sync with audio
-                '-async', '1',  # Adjust audio to match video
-                '-analyzeduration', '10000000',  # Increase analyzeduration to 10 seconds
-                '-probesize', '5000000',  # Increase probesize to 5MB
-                '-t', str(duration_seconds),  # Set the duration of the output file
-                video_file_path
+                '-f', 'pulse',
+                '-i', f'{self.audio_device}',
+                '-c:v', 'libx265',  # libx265' for better compression
+                '-preset', 'fast',
+                '-c:a', 'aac',
+                '-ar', '48000',
+                '-b:a', '128k',
+                '-pix_fmt', 'yuv420p',
+                '-vsync', 'vfr',
+                '-async', '1',
+                '-analyzeduration', '10000000',
+                '-probesize', '5000000',
+                '-t', str(duration_seconds),
+                '-f', 'mp4',  # Specify MP4 as the output format
+                video_file_path  # Make sure the file extension is .mp4
             ]
 
             # Start FFmpeg process
@@ -317,20 +318,30 @@ class VideoCamera:
                 # Add a delay or check for file completion
                 time.sleep(5)  # Small delay to ensure file writing is complete
 
-                # Generate a thumbnail from the video
-                thumbnail_filename = f"thumb_{timestamp}.jpg"
-                thumbnail_path = os.path.join(thumbnails_dir, thumbnail_filename)
-                self.generate_thumbnail(video_file_path, thumbnail_path)
-                print(f"Thumbnail generated: {thumbnail_path}")
+                # Attempt to generate a thumbnail
+                try:
+                    thumbnail_filename = f"thumb_{timestamp}.jpg"
+                    thumbnail_path = os.path.join(thumbnails_dir, thumbnail_filename)
+                    self.generate_thumbnail(video_file_path, thumbnail_path)
+                    print(f"Thumbnail generated: {thumbnail_path}")
 
-                # Save event in the database with thumbnail
-                event = Event(event_type='Periodic', description='Periodic buffer save', clip=f'event_clips/{video_filename}', thumbnail=f'thumbnails/{thumbnail_filename}')
-                event.save()
+                    # Save event in the database with thumbnail
+                    event = Event(event_type='Periodic', description='Periodic buffer save',
+                                clip=f'event_clips/{video_filename}', thumbnail=f'thumbnails/{thumbnail_filename}')
+                    event.save()
 
-                # Pass the video file path to the SendEmail instance
-                self.send_email.set_video_file_path(video_file_path)
-                self.email_executor.submit(self.send_email.send_email_snapshot)  # Ensure email is sent asynchronously
-                self.dashboard_api.send_video(video_file_path, description="Periodic buffer save", thumbnail_path=f'thumbnails/{thumbnail_filename}')
+                    # Pass the video file path to the SendEmail instance
+                    self.send_email.set_video_file_path(video_file_path)
+                    self.email_executor.submit(self.send_email.send_email_snapshot)  # Ensure email is sent asynchronously
+                    self.dashboard_api.send_video(video_file_path, description="Periodic buffer save",
+                                                thumbnail_path=f'thumbnails/{thumbnail_filename}')
+
+                except subprocess.CalledProcessError as e:
+                    print(f"Failed to generate thumbnail: {e.stderr.decode()}")
+                    # You might want to log this or take other actions, but don't let it stop the rest of the processing.
+
+                except Exception as e:
+                    print(f"Unexpected error during thumbnail generation: {str(e)}")
 
             # Clear the buffer after saving the clip
             self.running_buffer = []
@@ -338,6 +349,7 @@ class VideoCamera:
         # Restart the timer to repeat the process
         self.save_timer = threading.Timer(60, self.save_running_buffer_clip)
         self.save_timer.start()
+
 
 
     def generate_thumbnail(self, video_path, thumbnail_path, time="00:00:05"):
