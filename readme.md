@@ -78,34 +78,42 @@ Ensure you have Docker installed on your system. You can follow the [official Do
 
 ### Step 1: Build the Docker Image
 
-To build the Docker image for the Camster application, run the following command in the root directory of the project (where the Dockerfile is located):
+** To build the Docker image for the Camster application, run the following command in the root directory of the project (where the Dockerfile is located):** 
 
+```bash
 docker build -t camster_app:v1.0 .
+```
 
 
 This command will create a Docker image named camster_app with the tag v1.0. The build process might take a few minutes as it installs the necessary dependencies and copies the required files into the container.
 
 ### Step 2: Run the Docker Container
 Once the Docker image is built, you can run the container using the following command:
-
+```bash
 docker run -p 80:80 camster_app:v1.0
+```
 
 This command will start the application inside a Docker container and map port 80 of the container to port 80 of your host machine. You can access the application by navigating to http://localhost in your web browser.
 
 ### Step 3: Accessing the Application
 With the container running, you can access the Camster web application by opening a web browser and going to:
-
+```bash
 http://localhost
+```
 
 If you want to stop the container, you can do so by identifying the container ID and stopping it with the following commands:
 
 List running containers:
 
+```bash
 docker ps
+```
 
 Stop the container:
 
+```bash
 docker stop <container_id>
+```
 
 Replace <container_id> with the actual container ID from the output of the docker ps command.
 
@@ -118,9 +126,13 @@ To remove the Docker image and free up space on your system, you can use the fol
 
 Remove the container (if still running):
 
+```bash
 docker rm <container_id>
+```
 
 
 Remove the Docker image:
 
+```bash
 docker rmi camster_app:v1.0
+```
