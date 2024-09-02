@@ -3,3 +3,111 @@ web_app/lib/python3.10/site-packages/tensorflow/libtensorflow_cc.so.2
 web_app/lib/python3.10/site-packages/tensorflow/libtensorflow_framework.so.2
 web_app/lib/python3.10/site-packages/cv2/cv2.abi3.so
 web_app/lib/python3.10/site-packages/clang/native/libclang.so
+
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+*.sqlite3
+media
+
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+coverage.xml
+*.cover
+.hypothesis/
+
+# Translations
+*.mo
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+.env
+.env.*
+myvenv/
+logs
+staticfiles
+media
+
+# macOS
+.DS_Store
+
+# Node.js
+node_modules/
+
+# Heroku
+*.pot
+*.pyc
+*~
+*.py[cod]
+__pycache__/
+db.sqlite3
+.DS_Store
+.idea
+.vscode
+venv/
+*.env
+*.mo
+*.log
+local_settings.py
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+.history
+
+# Jupyter Notebook
+.ipynb_checkpoints
+# .gitignore
+
+# Virtual environment
+venv/
+web_app/lib/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+# Django specific
+*.log
+staticfiles/
+media/
+db.sqlite3
+models/yolo/*
+
+# Exclude large files
+web_app/lib/python3.10/site-packages/tensorflow/libtensorflow_cc.so.2
+web_app/lib/python3.10/site-packages/tensorflow/libtensorflow_framework.so.2
+web_app/lib/python3.10/site-packages/cv2/cv2.abi3.so
+web_app/lib/python3.10/site-packages/clang/native/libclang.so
+
+camera_app/camera/__pycache__
+
+camera_app/media/*
+
+camera_app/camera/migrations/__pycache__
+
+camera_app/camera_app/__pycache__
+
+web_app/*
+
