@@ -1,0 +1,5 @@
+# Exclude large files
+web_app/lib/python3.10/site-packages/tensorflow/libtensorflow_cc.so.2
+web_app/lib/python3.10/site-packages/tensorflow/libtensorflow_framework.so.2
+web_app/lib/python3.10/site-packages/cv2/cv2.abi3.so
+web_app/lib/python3.10/site-packages/clang/native/libclang.so
