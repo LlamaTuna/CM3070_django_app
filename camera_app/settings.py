@@ -133,8 +133,9 @@ LOGOUT_REDIRECT_URL = 'index'
 
 # settings.py
 
-DASHBOARD_API_URL = 'http://127.0.0.1:8000/api'  # Replace with the actual URL of your dashboard API
+# DASHBOARD_API_URL = 'http://127.0.0.1:8080/api'  # Replace with the actual URL of your dashboard API
 # DASHBOARD_API_URL = "https://shark-app-j9rbt.ondigitalocean.app/api"
+DASHBOARD_API_URL = 'http://192.168.1.60:8080/api'
 
 
 TIME_ZONE = 'America/Los_Angeles'

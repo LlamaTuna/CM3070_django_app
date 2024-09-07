@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     pulseaudio \
     v4l-utils \
     libhdf5-dev \
+    ffmpeg \  
     && rm -rf /var/lib/apt/lists/*
 
 # Install TensorFlow
