@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    container_name: camster_app  # Name for your container
+    ports:
+      - "80:80"  # Map port 80 of the container to port 80 of the host
+    volumes:
+      - .:/app  # Mount the current directory
+      - /run/user/1000/pulse:/run/user/1000/pulse  # Expose PulseAudio socket from the host
+      - /dev/snd:/dev/snd  # Allow access to audio devices
+    environment:
+      - NAME=World
+      - PULSE_SERVER=unix:/run/user/1000/pulse/native
+    depends_on:
+      - db  # If you're using a database, otherwise remove this
+    restart: always  # Ensure that the service restarts on failures
+    devices:
+      - "/dev/video0:/dev/video0"  # Grant access to /dev/video0 (or other video devices)
+      - "/dev/video1:/dev/video1"
+      - "/dev/video2:/dev/video2"
+      - "/dev/video3:/dev/video3"   # Add more devices if needed
+    privileged: true  # If necessary, provide privileged access to the container for device access
+
+  db:
+    image: postgres:13  # Example using Postgres
+    container_name: camster_db
+    environment:
+      POSTGRES_DB: camster_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"  # Expose Postgres to the host
+
+volumes:
+  postgres_data:

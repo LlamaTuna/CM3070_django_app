@@ -54,18 +54,35 @@ logs = []
 # Global variable to hold the camera instance
 camera_instance = None
 
-def list_cameras():
+def list_cameras(max_cameras=4):
     """
-    Lists available camera devices and their paths.
-
+    Lists available camera devices, prioritizing /dev/video0, and limits the list to a maximum of 4 devices.
+    
+    Args:
+        max_cameras (int): The maximum number of camera devices to return.
+    
     Returns:
-        list: A list of paths to available camera devices.
+        list: A list of paths to the available camera devices, limited to max_cameras.
     """
     camera_devices = []
-    for filename in os.listdir('/dev'):
-        if filename.startswith('video'):
-            device_path = os.path.join('/dev', filename)
-            camera_devices.append(device_path)
+    
+    try:
+        # Check if /dev/video0 exists and add it first
+        if os.path.exists('/dev/video0'):
+            camera_devices.append('/dev/video0')
+        
+        # List other video devices, excluding /dev/video0
+        for filename in os.listdir('/dev'):
+            if filename.startswith('video') and f'/dev/{filename}' != '/dev/video0':
+                device_path = os.path.join('/dev', filename)
+                camera_devices.append(device_path)
+        
+        # Limit the number of cameras to max_cameras
+        camera_devices = camera_devices[:max_cameras]
+        
+    except Exception as e:
+        print(f"Error listing cameras: {e}")
+    
     print("Camera devices:", camera_devices)
     return camera_devices
 

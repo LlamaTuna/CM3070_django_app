@@ -1,9 +1,11 @@
 # Use an official Python runtime as a parent image
 FROM python:3.8-slim
 
-# Install system dependencies
+# Install system dependencies, including CMake and g++
 RUN apt-get update && apt-get install -y \
     gcc \
+    g++ \ 
+    cmake \  
     libasound2-dev \
     libportaudio2 \
     libportaudiocpp0 \
@@ -14,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     alsa-oss \
     pulseaudio \
     v4l-utils \
+    libhdf5-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install TensorFlow

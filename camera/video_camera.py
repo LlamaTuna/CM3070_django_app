@@ -68,11 +68,12 @@ class VideoCamera:
             self.video = None
             self.initialized = False  # Camera failed to open
             return
-        
+
         # Initialize PulseAudioManager
         self.pulse_manager = PulseAudioManager()
         
-        self.audio_device = 'default'  # Fallback to default device
+        # Attempt to use PulseAudio, fallback to default audio device if PulseAudio is unavailable
+        self.audio_device = 'default'
         if request and request.user.is_authenticated:
             try:
                 setting = AudioDeviceSetting.objects.get(user=request.user, device_path=camera_index)
@@ -80,6 +81,8 @@ class VideoCamera:
                 self.audio_device = self.pulse_manager.get_selected_source()
             except AudioDeviceSetting.DoesNotExist:
                 pass
+            except Exception as e:
+                print(f"Error using PulseAudio. Falling back to default audio device: {e}")
 
         self.initialized = True  # Camera successfully opened
         self.video.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
@@ -103,7 +106,6 @@ class VideoCamera:
         self.lock = threading.Lock()
         self.frames = []
         self.detected_faces = []
-        
 
         self.executor = ThreadPoolExecutor(max_workers=1)
         self.executor.submit(self._process_frames)
@@ -130,7 +132,7 @@ class VideoCamera:
             self.email_executor.shutdown(wait=False)
         if hasattr(self, 'pulse_manager') and self.pulse_manager:
             self.pulse_manager.close()
-
+            
     def get_frame(self):
         """
         Captures a frame from the video feed, processes it for movement detection,
@@ -265,9 +267,11 @@ class VideoCamera:
             video_file_path = os.path.join(event_clips_dir, video_filename)
 
             # Adjust frame rate and duration (if needed)
-            fps = 7
+            fps = 15  # Frames per second
             duration_seconds = 15  # Length of the snippet in seconds
             expected_frame_count = fps * duration_seconds
+            print(f"Running buffer size: {len(self.running_buffer)}")
+
 
             # Use FFmpeg to record both video and audio into an MP4 container
             command = [
@@ -280,7 +284,7 @@ class VideoCamera:
                 '-i', '-',  # Input comes from a pipe (for video)
                 '-f', 'pulse',
                 '-i', f'{self.audio_device}',
-                '-c:v', 'libx265',  # libx265' for better compression
+                '-c:v', 'libx264',  #most common codec
                 '-preset', 'fast',
                 '-c:a', 'aac',
                 '-ar', '48000',
@@ -315,8 +319,9 @@ class VideoCamera:
                 # Ensure the file is fully written and closed before sending
                 print(f"Video file {video_file_path} written successfully")
 
-                # Add a delay or check for file completion
-                time.sleep(5)  # Small delay to ensure file writing is complete
+                # Check for file size stabilization
+                wait_for_file_stabilization(video_file_path)
+
 
                 # Attempt to generate a thumbnail
                 try:
@@ -376,3 +381,24 @@ class VideoCamera:
             print(f"FFmpeg command failed with error: {e.stderr.decode()}")
             raise
 
+# Check for file size stabilization
+def wait_for_file_stabilization(file_path, timeout=10, interval=0.5):
+    start_time = time.time()
+    last_size = -1
+    while True:
+        try:
+            current_size = os.path.getsize(file_path)
+        except OSError:
+            # File does not exist yet
+            current_size = -1
+        
+        if current_size == last_size and current_size > 0:
+            # File size has stabilized and it's not empty
+            return True
+        
+        last_size = current_size
+        
+        if time.time() - start_time > timeout:
+            raise TimeoutError(f"Timeout: {file_path} did not stabilize after {timeout} seconds")
+        
+        time.sleep(interval)  # Wait for a short interval before checking again

@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-p!-o78ot^1(z-*g=7wx(!3%@$(j8qh)&5$f0ge1pj)1r7yy&q6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 # Custom user model
 AUTH_USER_MODEL = 'camera.CustomUser'
@@ -133,7 +133,10 @@ LOGOUT_REDIRECT_URL = 'index'
 
 # settings.py
 
-DASHBOARD_API_URL = 'http://127.0.0.1:8001/api'  # Replace with the actual URL of your dashboard API
+DASHBOARD_API_URL = 'http://127.0.0.1:8000/api'  # Replace with the actual URL of your dashboard API
+# DASHBOARD_API_URL = "https://shark-app-j9rbt.ondigitalocean.app/api"
+
 
 TIME_ZONE = 'America/Los_Angeles'
 USE_TZ = True 
+
