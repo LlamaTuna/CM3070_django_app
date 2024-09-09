@@ -5,7 +5,7 @@ services:
     build: .
     container_name: camster_app  # Name for your container
     ports:
-      - "80:80"  # Map port 80 of the container to port 80 of the host
+      - "8005:80"  # Map port 80 of the container to port 80 of the host
     volumes:
       - .:/app  # Mount the current directory
       - /run/user/1000/pulse:/run/user/1000/pulse  # Expose PulseAudio socket from the host

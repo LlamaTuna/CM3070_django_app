@@ -13,12 +13,12 @@ from .models import Event, AudioDeviceSetting
 import subprocess
 from .object_classifier import ObjectClassifier
 from .dashboard_api_handler import DashboardAPIHandler
-from .pulse_audio_manager import PulseAudioManager
+from .audio_source import AudioSource
 
 
 class VideoCamera:
     """
-    A class to manage video streaming, frame processing, and event handling from a camera device.
+    A class to manage video streaming, frame processing, and event handling from a camera device, including audio capture using ALSA.
 
     Attributes:
         camera_index (int): The index of the camera device to use.
@@ -26,8 +26,8 @@ class VideoCamera:
         request (HttpRequest): The request object, used to access user-specific settings.
         video (cv2.VideoCapture): The OpenCV video capture object.
         initialized (bool): A flag indicating whether the camera was successfully initialized.
-        pulse_manager (PulseAudioManager): Manages audio source selection.
-        audio_device (str): The selected audio device for recording.
+        audio_source (AudioSource): Manages ALSA audio source selection and capture.
+        audio_device (str): The selected ALSA audio device for recording.
         movement_detection (MovementDetection): Handles movement detection in frames.
         facial_recognition (FacialRecognition): Handles facial recognition.
         send_email (SendEmail): Handles sending alert emails.
@@ -61,6 +61,16 @@ class VideoCamera:
             resolution (tuple): The resolution of the video feed.
             request (HttpRequest): The request object, used to access user-specific settings.
         """
+
+            
+        # Initialize the audio source, will fall back if no usable audio device
+       # Initialize audio source and add event listener
+        self.resolution = resolution  
+        self.audio_source = AudioSource()
+        self.audio_source.add_listener(self.on_audio_event)  # Capture audio events
+        self.audio_source.start()
+
+
         self.camera_index = camera_index
         self.video = cv2.VideoCapture(camera_index)
         if not self.video.isOpened():
@@ -68,21 +78,6 @@ class VideoCamera:
             self.video = None
             self.initialized = False  # Camera failed to open
             return
-
-        # Initialize PulseAudioManager
-        self.pulse_manager = PulseAudioManager()
-        
-        # Attempt to use PulseAudio, fallback to default audio device if PulseAudio is unavailable
-        self.audio_device = 'default'
-        if request and request.user.is_authenticated:
-            try:
-                setting = AudioDeviceSetting.objects.get(user=request.user, device_path=camera_index)
-                self.pulse_manager.select_audio_source(setting.audio_device)
-                self.audio_device = self.pulse_manager.get_selected_source()
-            except AudioDeviceSetting.DoesNotExist:
-                pass
-            except Exception as e:
-                print(f"Error using PulseAudio. Falling back to default audio device: {e}")
 
         self.initialized = True  # Camera successfully opened
         self.video.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
@@ -120,6 +115,16 @@ class VideoCamera:
         self.last_alert_time = time.time()
         self.alert_interval = 30  # 30 seconds
 
+    def on_audio_event(self, volume):
+        """Triggered when audio event occurs. Capture frame and store it."""
+        print(f"Audio event detected with volume: {volume}. Capturing frame...")
+        success, frame = self.video.read()
+        timestamp = time.time()  # Capture the exact time when the frame is captured
+        if success:
+            self.frames.append((frame, timestamp))
+            self.running_buffer.append((frame, timestamp))  # Store frame and timestamp
+
+    
     def __del__(self):
         """Handles cleanup by releasing resources when the object is destroyed."""
         if self.video:
@@ -233,128 +238,153 @@ class VideoCamera:
                     face_name = face.get('label', 'Unknown')
                     self.dashboard_api.send_log("face_recognition", f"Detected face: {face_name}", extra_data={"face_name": face_name})
 
-    def get_user_audio_device(self):
-        """
-        Retrieves the user's selected audio device if available, otherwise returns 'default'.
+    # def get_user_audio_device(self):
+    #     """
+    #     Retrieves the user's selected audio device if available, otherwise returns 'default'.
 
-        Returns:
-            str: The name of the audio device.
-        """
-        if self.request and self.request.user.is_authenticated:
-            try:
-                device_setting = AudioDeviceSetting.objects.get(user=self.request.user)
-                return device_setting.audio_device_name
-            except AudioDeviceSetting.DoesNotExist:
-                pass
-        return 'default'  # Fallback to default device
-    
+    #     Returns:
+    #         str: The name of the audio device.
+    #     """
+    #     if self.request and self.request.user.is_authenticated:
+    #         try:
+    #             device_setting = AudioDeviceSetting.objects.get(user=self.request.user)
+    #             return device_setting.audio_device_name
+    #         except AudioDeviceSetting.DoesNotExist:
+    #             pass
+    #     return 'default'  # Fallback to default device
+
     def save_running_buffer_clip(self):
         """
-        Saves the frames in the running buffer as a video clip, generates a thumbnail,
+        Saves the frames in the running buffer as a video clip, captures audio, generates a thumbnail,
         and sends the clip and thumbnail to the dashboard API and via email.
         """
-        if self.running_buffer:
-            event_clips_dir = os.path.join(settings.MEDIA_ROOT, 'event_clips')
-            thumbnails_dir = os.path.join(settings.MEDIA_ROOT, 'thumbnails')
+        # Directories for saving clips and thumbnails
+        event_clips_dir = os.path.join(settings.MEDIA_ROOT, 'event_clips')
+        thumbnails_dir = os.path.join(settings.MEDIA_ROOT, 'thumbnails')
 
-            if not os.path.exists(event_clips_dir):
-                os.makedirs(event_clips_dir)
-            if not os.path.exists(thumbnails_dir):
-                os.makedirs(thumbnails_dir)
+        if not os.path.exists(event_clips_dir):
+            os.makedirs(event_clips_dir)
+        if not os.path.exists(thumbnails_dir):
+            os.makedirs(thumbnails_dir)
 
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            video_filename = f"event_{timestamp}.mp4"
-            video_file_path = os.path.join(event_clips_dir, video_filename)
+        # Timestamp for file naming
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        video_filename = f"event_{timestamp}.mp4"
+        video_file_path = os.path.join(event_clips_dir, video_filename)
 
-            # Adjust frame rate and duration (if needed)
-            fps = 15  # Frames per second
-            duration_seconds = 15  # Length of the snippet in seconds
-            expected_frame_count = fps * duration_seconds
-            print(f"Running buffer size: {len(self.running_buffer)}")
+        # Frame rate and duration
+        fps = 15  # Frames per second
+        duration_seconds = len(self.running_buffer) / fps  # Calculate duration from the number of frames in the buffer
+
+        # FFmpeg command to handle both video and audio creation with sync options
+        command = [
+            'ffmpeg',
+            '-y',  # Overwrite output files without asking
+            '-f', 'rawvideo',
+            '-pix_fmt', 'bgr24',
+            '-s', f'{self.resolution[0]}x{self.resolution[1]}',  # Video resolution
+            '-r', str(fps),  # Frame rate
+            '-i', '-',  # Input comes from a pipe (for video frames)
+        ]
+
+        # Capture audio from the AudioSource
+        audio_device = self.audio_source.get_device_name()
+        if audio_device and audio_device != 'default':
+            command.extend([
+                '-itsoffset', '10',  # adjust the offset here if needed for synchronization
+                '-f', 'alsa',  # Use ALSA for audio input
+                '-i', f'{audio_device}',  # ALSA device for audio input
+                '-c:v', 'libx264',  # Video codec
+                '-preset', 'fast',  # Video encoding speed
+                '-c:a', 'aac',  # Audio codec
+                '-ar', '48000',  # Audio sample rate
+                '-b:a', '128k',  # Audio bitrate
+                '-pix_fmt', 'yuv420p',  # Pixel format for video
+                '-async', '1',  # Sync the audio stream with the video
+                '-vsync', '1',  # Keep video in sync with the audio
+            ])
+        else:
+            # If no audio is available, proceed without adding audio settings
+            command.extend([
+                '-c:v', 'libx264',  # Video codec
+                '-preset', 'fast',  # Video encoding speed
+                '-pix_fmt', 'yuv420p',  # Pixel format for video
+                '-vsync', '1',  # Keep video in sync
+            ])
+        command.extend([
+            '-vf', 'setpts=PTS*1.5',  # Slow down the playback by 2x
+        ])
 
 
-            # Use FFmpeg to record both video and audio into an MP4 container
-            command = [
-                'ffmpeg',
-                '-y',  # Overwrite output files without asking
-                '-f', 'rawvideo',
-                '-pix_fmt', 'bgr24',
-                '-s', '320x240',
-                '-r', str(fps),
-                '-i', '-',  # Input comes from a pipe (for video)
-                '-f', 'pulse',
-                '-i', f'{self.audio_device}',
-                '-c:v', 'libx264',  #most common codec
-                '-preset', 'fast',
-                '-c:a', 'aac',
-                '-ar', '48000',
-                '-b:a', '128k',
-                '-pix_fmt', 'yuv420p',
-                '-vsync', 'vfr',
-                '-async', '1',
-                '-analyzeduration', '10000000',
-                '-probesize', '5000000',
-                '-t', str(duration_seconds),
-                '-f', 'mp4',  # Specify MP4 as the output format
-                video_file_path  # Make sure the file extension is .mp4
-            ]
+        command.extend([
+            '-t', str(duration_seconds),  # Specify the duration of the video
+            '-f', 'mp4',  # Specify MP4 as the output format
+            video_file_path  # Output video file path
+        ])
 
-            # Start FFmpeg process
-            process = subprocess.Popen(command, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 
+        # Start FFmpeg process
+        process = subprocess.Popen(command, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+
+        try:
+            # Write all frames from the running buffer to FFmpeg
+            for frame in self.running_buffer:
+                process.stdin.write(frame.tobytes())
+
+        except Exception as e:
+            print(f"Error writing frame to FFmpeg process: {e}")
+
+        process.stdin.close()
+        process.wait()
+
+        if process.returncode != 0:
+            error_output = process.stderr.read().decode()
+            print(f"FFmpeg error: {error_output}")
+        else:
+            # Ensure the file is fully written and closed before sending
+            print(f"Video file {video_file_path} written successfully")
+
+            # Change permissions and/or ownership after the file is created
             try:
-                for i in range(min(expected_frame_count, len(self.running_buffer))):
-                    frame = self.running_buffer[i]
-                    process.stdin.write(frame.tobytes())
+                # Change file permissions to allow read/write access
+                os.chmod(video_file_path, 0o666)  # rw-rw-rw-
+                # Optionally, change file ownership (replace 'your-username' with the actual user)
+                # os.chown(video_file_path, uid, gid)
+                print(f"Permissions changed for {video_file_path}")
             except Exception as e:
-                print(f"Error writing frame to FFmpeg process: {e}")
+                print(f"Error changing permissions for {video_file_path}: {e}")
 
-            process.stdin.close()
-            process.wait()
+            # Check for file size stabilization
+            wait_for_file_stabilization(video_file_path)
+            # Attempt to generate a thumbnail
+            try:
+                thumbnail_filename = f"thumb_{timestamp}.jpg"
+                thumbnail_path = os.path.join(thumbnails_dir, thumbnail_filename)
+                self.generate_thumbnail(video_file_path, thumbnail_path)
+                print(f"Thumbnail generated: {thumbnail_path}")
 
-            if process.returncode != 0:
-                error_output = process.stderr.read().decode()
-                print(f"FFmpeg error: {error_output}")
-            else:
-                # Ensure the file is fully written and closed before sending
-                print(f"Video file {video_file_path} written successfully")
+                # Save event in the database with thumbnail
+                event = Event(event_type='Periodic', description='Periodic buffer save',
+                            clip=f'event_clips/{video_filename}', thumbnail=f'thumbnails/{thumbnail_filename}')
+                event.save()
 
-                # Check for file size stabilization
-                wait_for_file_stabilization(video_file_path)
+                # Pass the video file path to the SendEmail instance
+                self.send_email.set_video_file_path(video_file_path)
+                self.email_executor.submit(self.send_email.send_email_snapshot)
+                self.dashboard_api.send_video(video_file_path, description="Periodic buffer save",
+                                            thumbnail_path=f'thumbnails/{thumbnail_filename}')
 
+            except subprocess.CalledProcessError as e:
+                print(f"Failed to generate thumbnail: {e.stderr.decode()}")
+            except Exception as e:
+                print(f"Unexpected error during thumbnail generation: {str(e)}")
 
-                # Attempt to generate a thumbnail
-                try:
-                    thumbnail_filename = f"thumb_{timestamp}.jpg"
-                    thumbnail_path = os.path.join(thumbnails_dir, thumbnail_filename)
-                    self.generate_thumbnail(video_file_path, thumbnail_path)
-                    print(f"Thumbnail generated: {thumbnail_path}")
-
-                    # Save event in the database with thumbnail
-                    event = Event(event_type='Periodic', description='Periodic buffer save',
-                                clip=f'event_clips/{video_filename}', thumbnail=f'thumbnails/{thumbnail_filename}')
-                    event.save()
-
-                    # Pass the video file path to the SendEmail instance
-                    self.send_email.set_video_file_path(video_file_path)
-                    self.email_executor.submit(self.send_email.send_email_snapshot)  # Ensure email is sent asynchronously
-                    self.dashboard_api.send_video(video_file_path, description="Periodic buffer save",
-                                                thumbnail_path=f'thumbnails/{thumbnail_filename}')
-
-                except subprocess.CalledProcessError as e:
-                    print(f"Failed to generate thumbnail: {e.stderr.decode()}")
-                    # You might want to log this or take other actions, but don't let it stop the rest of the processing.
-
-                except Exception as e:
-                    print(f"Unexpected error during thumbnail generation: {str(e)}")
-
-            # Clear the buffer after saving the clip
-            self.running_buffer = []
+        # Clear the buffer after saving the clip
+        self.running_buffer = []
 
         # Restart the timer to repeat the process
         self.save_timer = threading.Timer(60, self.save_running_buffer_clip)
         self.save_timer.start()
-
 
 
     def generate_thumbnail(self, video_path, thumbnail_path, time="00:00:05"):
@@ -402,3 +432,7 @@ def wait_for_file_stabilization(file_path, timeout=10, interval=0.5):
             raise TimeoutError(f"Timeout: {file_path} did not stabilize after {timeout} seconds")
         
         time.sleep(interval)  # Wait for a short interval before checking again
+
+
+
+
