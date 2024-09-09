@@ -1,0 +1,19 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" title=" " alt="" coords="5,565,164,591"/>
+<area shape="rect" id="node2" href="$classcamera_1_1migrations_1_10001__initial_1_1Migration.html" title=" " alt="" coords="270,5,451,47"/>
+<area shape="rect" id="node3" href="$classcamera_1_1migrations_1_10002__emailsettings_1_1Migration.html" title=" " alt="" coords="269,71,453,112"/>
+<area shape="rect" id="node4" href="$classcamera_1_1migrations_1_10003__alter__emailsettings__smtp__password__and__more_1_1Migration.html" title=" " alt="" coords="246,137,475,193"/>
+<area shape="rect" id="node5" href="$classcamera_1_1migrations_1_10004__alter__emailsettings__smtp__password__and__more_1_1Migration.html" title=" " alt="" coords="246,217,475,273"/>
+<area shape="rect" id="node6" href="$classcamera_1_1migrations_1_10005__camera__camerasystem_1_1Migration.html" title=" " alt="" coords="237,297,485,339"/>
+<area shape="rect" id="node7" href="$classcamera_1_1migrations_1_10006__remove__camerasystem__camera1__and__more_1_1Migration.html" title=" " alt="" coords="237,363,484,419"/>
+<area shape="rect" id="node8" href="$classcamera_1_1migrations_1_10007__camera_1_1Migration.html" title=" " alt="" coords="270,444,451,485"/>
+<area shape="rect" id="node9" href="$classcamera_1_1migrations_1_10008__camera__password__camera__username_1_1Migration.html" title=" " alt="" coords="259,510,462,566"/>
+<area shape="rect" id="node10" href="$classcamera_1_1migrations_1_10009__camera__device__index__alter__camera__password__and__more_1_1Migration.html" title=" " alt="" coords="218,590,503,646"/>
+<area shape="rect" id="node11" href="$classcamera_1_1migrations_1_10010__delete__camera_1_1Migration.html" title=" " alt="" coords="265,671,457,712"/>
+<area shape="rect" id="node12" href="$classcamera_1_1migrations_1_10011__event__thumbnail_1_1Migration.html" title=" " alt="" coords="258,736,463,777"/>
+<area shape="rect" id="node13" href="$classcamera_1_1migrations_1_10012__audiodevicesetting_1_1Migration.html" title=" " alt="" coords="251,801,470,843"/>
+<area shape="rect" id="node14" href="$classcamera_1_1migrations_1_10013__remove__audiodevicesetting__audio__device__name__and__more_1_1Migration.html" title=" " alt="" coords="212,867,509,923"/>
+<area shape="rect" id="node15" href="$classcamera_1_1migrations_1_10014__remove__audiodevicesetting__camera__index__and__more_1_1Migration.html" title=" " alt="" coords="231,947,490,1003"/>
+<area shape="rect" id="node16" href="$classcamera_1_1migrations_1_10015__log_1_1Migration.html" title=" " alt="" coords="270,1028,451,1069"/>
+<area shape="rect" id="node17" href="$classcamera_1_1migrations_1_10016__delete__log_1_1Migration.html" title=" " alt="" coords="270,1093,451,1135"/>
+</map>
