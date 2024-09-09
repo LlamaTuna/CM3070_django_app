@@ -1,3 +1,9 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classcamera_1_1forms_1_1AudioDeviceSettingForm_1_1Meta.html" title=" " alt="" coords="5,5,204,47"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,147,143,174"/>
+<area shape="rect" id="node2" href="$classcamera_1_1forms_1_1AudioDeviceSettingForm.html" title=" " alt="" coords="211,5,410,47"/>
+<area shape="rect" id="node3" href="$classcamera_1_1forms_1_1EmailSettingsForm.html" title=" " alt="" coords="191,71,431,98"/>
+<area shape="rect" id="node4" href="$classcamera_1_1forms_1_1RegisterForm.html" title=" " alt="" coords="209,122,413,149"/>
+<area shape="rect" id="node5" href="$classcamera_1_1forms_1_1TagFaceForm.html" title=" " alt="" coords="210,173,411,199"/>
+<area shape="rect" id="node6" href="$classcamera_1_1forms_1_1UploadFaceForm.html" title=" " alt="" coords="198,223,423,250"/>
+<area shape="rect" id="node7" href="$classcamera_1_1forms_1_1UserSettingsForm.html" title=" " alt="" coords="194,274,427,301"/>
 </map>

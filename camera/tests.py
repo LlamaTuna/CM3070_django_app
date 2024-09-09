@@ -80,35 +80,3 @@ class UserAuthTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
 
-# class LogTests(TestCase):
-
-#     def test_log_event(self):
-#         log_event("Test Event")
-#         self.assertIn("Test Event", logs[-1])
-
-#     def test_get_logs(self):
-#         log_event("Test Event 1")
-#         log_event("Test Event 2")
-#         response = self.client.get(reverse('get_logs'))
-#         self.assertEqual(response.status_code, 200)
-#         self.assertIn("Test Event 1", response.json()['logs'])
-
-
-
-# class FaceManagementTests(TestCase):
-
-#     def setUp(self):
-#         self.user = User.objects.create_user(username='testuser', password='testpassword')
-#         self.client.login(username='testuser', password='testpassword')
-
-#     def test_list_faces(self):
-#         response = self.client.get(reverse('list_faces'))
-#         self.assertEqual(response.status_code, 200)
-#         self.assertTemplateUsed(response, 'camera/list_faces.html')
-
-#     def test_tag_face(self):
-#         face = Face.objects.create(name="Test Face", tagged=False)
-#         with open('path_to_dummy_image.jpg', 'rb') as img:
-#             face.image.save('dummy_image.jpg', File(img), save=True)
-#         response = self.client.post(reverse('tag_face', args=[face.id]), {'name': 'Tagged Face'})
-#         self.assertEqual(response.status_code, 302)

@@ -238,21 +238,6 @@ class VideoCamera:
                     face_name = face.get('label', 'Unknown')
                     self.dashboard_api.send_log("face_recognition", f"Detected face: {face_name}", extra_data={"face_name": face_name})
 
-    # def get_user_audio_device(self):
-    #     """
-    #     Retrieves the user's selected audio device if available, otherwise returns 'default'.
-
-    #     Returns:
-    #         str: The name of the audio device.
-    #     """
-    #     if self.request and self.request.user.is_authenticated:
-    #         try:
-    #             device_setting = AudioDeviceSetting.objects.get(user=self.request.user)
-    #             return device_setting.audio_device_name
-    #         except AudioDeviceSetting.DoesNotExist:
-    #             pass
-    #     return 'default'  # Fallback to default device
-
     def save_running_buffer_clip(self):
         """
         Saves the frames in the running buffer as a video clip, captures audio, generates a thumbnail,

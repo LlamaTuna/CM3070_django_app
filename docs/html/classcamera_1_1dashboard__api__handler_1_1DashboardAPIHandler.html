@@ -91,7 +91,12 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a0cd38accbe0e334cc8feea64260154fc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classcamera_1_1dashboard__api__handler_1_1DashboardAPIHandler.html#a0cd38accbe0e334cc8feea64260154fc">api_url</a></td></tr>
 <tr class="separator:a0cd38accbe0e334cc8feea64260154fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><pre class="fragment">A class to handle sending logs, images, and videos to a dashboard API.
+
+Attributes:
+    api_url (str): The base URL of the dashboard API.
+</pre> </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a38356f9b91cbf031a55cf5be10337ac8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a38356f9b91cbf031a55cf5be10337ac8">&#9670;&nbsp;</a></span>__init__()</h2>
 
@@ -117,7 +122,11 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<pre class="fragment">Initializes the DashboardAPIHandler with the provided API URL.
 
+Args:
+    api_url (str): The base URL of the dashboard API.
+</pre> 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -152,7 +161,12 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<pre class="fragment">Sends an image to the dashboard API.
 
+Args:
+    image (ndarray): The image to be sent, in OpenCV format.
+    description (str, optional): A description of the image. Defaults to "Image uploaded".
+</pre> 
 </div>
 </div>
 <a id="ad3bf57404109ffbb0cb61f77ddd3513f"></a>
@@ -192,7 +206,13 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<pre class="fragment">Sends a log entry to the dashboard API.
 
+Args:
+    event_type (str): The type of the event (e.g., "info", "error").
+    description (str): A description of the event.
+    extra_data (dict, optional): Additional data to include in the log. Defaults to None.
+</pre> 
 </div>
 </div>
 <a id="a9f1519a8b57cc4b3f06c8f131f1cfd5d"></a>
@@ -232,7 +252,13 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<pre class="fragment">Sends a video file to the dashboard API, optionally with a thumbnail.
 
+Args:
+    video_path (str): The file path to the video to be sent.
+    description (str, optional): A description of the video. Defaults to "Video snippet uploaded".
+    thumbnail_path (str, optional): The file path to a thumbnail image for the video. Defaults to None.
+</pre> 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
